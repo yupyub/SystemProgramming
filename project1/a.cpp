@@ -1,2 +1,5 @@
 #include <cstdio>
+int main(){
+
+}
 
