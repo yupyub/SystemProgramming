@@ -1,0 +1,8 @@
+h 0 3
+help 0 0
+d 1 0
+dir 1 0
+q 2 0
+quit 2 0
+hi 3 0
+history 3 0
