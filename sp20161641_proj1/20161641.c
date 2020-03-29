@@ -1,6 +1,7 @@
 #include "20161641.h"
 int main(){
-	instSetInit();
-	while(getInstruction() != 1);
+	functionPointerInit();
+	instructionSetInit();
+	while(getInput());
 	return 0;
 }

@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall
 TARGET = test
-OBJECTS = 20161641.o help.o InstructionProcessing.o
+OBJECTS = 20161641.o functions.o InstructionProcessing.o
 
 all : $(TARGET)
 
