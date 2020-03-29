@@ -10,6 +10,7 @@ typedef struct _instructionNode{
 	struct _instructionNode* link;
 }instructionNode;
 typedef struct _historyNode{
+	int count;
 	char str[100];
 	struct _historyNode* link;
 }historyNode;

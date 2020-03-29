@@ -1,6 +1,6 @@
 #include "20161641.h"
 instructionNode* instructionSet = NULL;
-historyNode* inputHistory = NULL;
+historyNode* historySet = NULL;
 int (*functionPointer[20])(int,char[100][100]);
 void instructionSetInit(){ // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 	FILE *fp = fopen("operations.txt","r");
@@ -69,5 +69,33 @@ int classifyInput(int argv, char argc[100][100]){ // 명령어를 분류
 	return 0;
 }
 void storeHistory(char str[]){ // 규칙에 맞는 명령어 저장
-
+	historyNode* tempNode = historySet;
+	historyNode* newNode =(historyNode*)malloc(sizeof(historyNode));
+	int len = strlen(str);
+	str[len-1] = '\0';
+	newNode->count = 1;
+	strcpy(newNode->str,str);
+	newNode->link = NULL;
+	if(tempNode != NULL){
+		while(tempNode -> link != NULL){
+			tempNode = tempNode->link;
+		}
+		newNode->count = tempNode->count + 1;
+		tempNode->link = newNode;
+	}
+	else
+		historySet = newNode;
+	return;
+}
+int printHistory(int argc, char argv[100][100]){ // 명령어 기록 출력 (함수 포인터 4)
+	historyNode* tempNode = historySet;
+	int count = 0;
+	while(tempNode != NULL){
+		printf("%-7d %s\n",tempNode->count,tempNode->str);
+		count = tempNode->count;
+		tempNode = tempNode->link;
+	}
+	count++;
+	printf("%-7d %s\n",count,argv[0]); // 자신을 호출한 hist 명령어 출력해야 함: 
+	return 1;
 }
