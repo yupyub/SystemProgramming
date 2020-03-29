@@ -36,7 +36,6 @@ int getInput(){ // bash에서 명령어를 읽어들인다
 	fgets(input,100,stdin);
 	strcpy(tmpHist,input);
 	parser(input,&argc,argv);
-	
 	int ret = functionPointer[classifyInput(argc,argv)](argc,argv);
 	if(ret == 1)  // 1을 제외한 모든 리턴 값은 오류사항을 뜻함(0은 종료)
 		storeHistory(tmpHist);
@@ -56,6 +55,8 @@ void parser(char str[], int* argc, char argv[100][100]){
 int classifyInput(int argv, char argc[100][100]){ // 명령어를 분류 
 	instructionNode* tempNode = instructionSet;
 	int caseNum = 0,valNum = 0;
+	if(argv == 0)
+		return 0;
 	while(tempNode != NULL){
 		if(strcmp(tempNode->str,*argc) == 0){
 			caseNum = tempNode->caseNum;

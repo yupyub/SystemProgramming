@@ -31,14 +31,30 @@ int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 
 		return 1;
 	}
 	int count = 0;
+	char str[35];
 	while((entry = readdir(dir)) != NULL){
 		lstat(entry->d_name,&buf);
-		if(S_ISDIR(buf.st_mode))
-			printf("%-10s/	",entry->d_name);
-		else if(S_ISREG(buf.st_mode) && (S_IEXEC&buf.st_mode))
-			printf("%-10s*	",entry->d_name);
+		if(strlen(entry->d_name)>=29){ // 이름이 매우 긴 경우 "..."으로 생략
+			strncpy(str,entry->d_name,26);
+			str[26] = str[27] = str[28] = '.';
+			str[29] = '\0';
+		}
+		else{
+			strncpy(str,entry->d_name,29);
+			str[(int)strlen(entry->d_name)] = '\0';
+		}
+		if(S_ISDIR(buf.st_mode)){
+			printf("%c[1;34m",27);	// 디랙토리인 경우 파란색으로 출력 (추가구현)
+			printf("%*.*s",31,(int)strlen(entry->d_name)+1,strcat(str,"/"));
+			printf("%c[0m",27);
+		}
+		else if(S_ISREG(buf.st_mode) && (S_IEXEC&buf.st_mode)){
+			printf("%c[1;32m",27);	// 실행파일인 경우 초록색으로 출력 (추가구현)
+			printf("%*.*s",31,(int)strlen(entry->d_name)+1,strcat(str,"*"));
+			printf("%c[0m",27);
+		}
 		else
-			printf("%-10s	",entry->d_name);
+			printf("%*.*s",31,(int)strlen(entry->d_name),str);
 		count++;
 		if(count%3 == 0)
 			printf("\n");
