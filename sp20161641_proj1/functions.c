@@ -20,12 +20,9 @@ int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1)
 	return 1;
 }
 int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
-	//char cwd[1024] = {0,};
 	DIR* dir = NULL;
 	struct dirent* entry;
 	struct stat buf;
-	//getcwd(cwd,1024);
-	//printf("%s\n",cwd);
 	if((dir = opendir("./")) == NULL){
 		printf("directory open error\n");
 		return 1;
@@ -60,13 +57,11 @@ int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 
 			printf("\n");
 	}
 	printf("\n");
-	//free(cwd);
 	closedir(dir);
 
 	return 1;
 }
 int quitProgram(int argc, char argv[100][100]){ // 프로그램 종료 (함수 포인터 3)
 	printf("Quit Program. Bye!\n"); // 지워야 함
-	// 이후 선언된 메모리 Free등의 처리 추가구현
-	return 0;  // 프로그램 종료를 위해 모든 함수 중 유일하게 0을 return 한다
+	return INPUT_EXIT;  // 프로그램 종료를 위해 모든 함수 중 유일하게 0을 return 한다
 }

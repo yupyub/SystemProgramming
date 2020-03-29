@@ -1,3 +1,5 @@
+#ifndef MY1641
+#define MY1641
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
@@ -5,6 +7,16 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <sys/stat.h>
+
+#define INPUT_ERROR (-1)
+#define INPUT_EXIT (0)
+#define INPUT_NORMAL (1)
+
+#define FUNC_ERROR_EXCEED_VARI (1)
+//example
+
+
+
 typedef struct _instructionNode{
 	char str[100];
 	int caseNum;
@@ -16,10 +28,9 @@ typedef struct _historyNode{
 	char str[100];
 	struct _historyNode* link;
 }historyNode;
+
 void instructionSetInit(); // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 void loadOneInstruction(FILE*, instructionNode**); // 재귀적으로 명령어 리스트 생성 
-void functionPointerInit();
-int getInput(); // bash에서 명령어를 읽어들인다 
 void parser(char[], int*, char[100][100]); // 문자열을 파싱
 int classifyInput(int , char[100][100]); // 명령어를 분류 
 void storeHistory(char[]);// 규칙에 맞는 명령어 저장
@@ -29,3 +40,8 @@ int help(int, char[100][100]); // 도움말 출력 (함수 포인터 1)
 int printDirectory(int, char[100][100]); // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
 int quitProgram(int, char[100][100]); // 프로그램 종료 (함수 포인터 3)
 int printHistory(int, char[100][100]); // 명령어 기록 출력 (함수 포인터 4)
+void recurPrintOneHistory(historyNode*); // 재귀적으로 하니씩 출력
+
+
+
+#endif
