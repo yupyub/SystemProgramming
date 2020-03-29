@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <sys/stat.h>
 typedef struct _instructionNode{
 	char str[100];
 	int caseNum;

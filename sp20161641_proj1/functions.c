@@ -20,7 +20,33 @@ int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1)
 	return 1;
 }
 int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
-	printf("DIR\n");
+	//char cwd[1024] = {0,};
+	DIR* dir = NULL;
+	struct dirent* entry;
+	struct stat buf;
+	//getcwd(cwd,1024);
+	//printf("%s\n",cwd);
+	if((dir = opendir("./")) == NULL){
+		printf("directory open error\n");
+		return 1;
+	}
+	int count = 0;
+	while((entry = readdir(dir)) != NULL){
+		lstat(entry->d_name,&buf);
+		if(S_ISDIR(buf.st_mode))
+			printf("%-10s/	",entry->d_name);
+		else if(S_ISREG(buf.st_mode) && (S_IEXEC&buf.st_mode))
+			printf("%-10s*	",entry->d_name);
+		else
+			printf("%-10s	",entry->d_name);
+		count++;
+		if(count%3 == 0)
+			printf("\n");
+	}
+	printf("\n");
+	//free(cwd);
+	closedir(dir);
+
 	return 1;
 }
 int quitProgram(int argc, char argv[100][100]){ // 프로그램 종료 (함수 포인터 3)
