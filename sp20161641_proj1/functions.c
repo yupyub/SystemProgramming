@@ -10,6 +10,8 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력 (추가�
 		case MEMORY_ERROR_ADDRESS_START_END:
 			printf("START ADDRESS IS BIGGER THEN END ADDRESS\n");
 			break;
+		case OPCODE_DOESNT_EXIST:
+			printf("OPCODE DOESN'T EXIST\n");
 	}
 
 }

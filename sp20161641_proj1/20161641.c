@@ -6,11 +6,12 @@ int main(){
 	char argv[100][100];
 	char tmpHist[100];
 	instructionSetInit();
+	makeOpcodeTable();
 	while(1){
 		printf("sicsim> ");
 		fgets(input,100,stdin);
 		strcpy(tmpHist,input);
-		parser(input,&argc,argv);
+		parser(input,&argc,argv,", \n\t");
 		int caseNum = functionPointer[classifyInput(argc,argv)](argc,argv);
 		switch(caseNum){
 			case INPUT_ERROR:

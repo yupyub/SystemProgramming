@@ -10,7 +10,9 @@ int (*functionPointer[20])(int,char[100][100])={\
 		dumpMemory,\
 		editMemory,\
 		fillMemory,\
-		resetMemory};
+		resetMemory,\
+		opcodeMnemonic,\
+		opcodeList};
 
 void instructionSetInit(){ // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 	FILE *fp = fopen("operations.txt","r");
@@ -27,8 +29,7 @@ void loadOneInstruction(FILE *fp,instructionNode **instSet){ // 재귀적으로 
 	(*instSet)->link=NULL;
 	loadOneInstruction(fp,&(*instSet)->link);
 }
-void parser(char str[], int* argc, char argv[100][100]){
-	char sep[] = ", \n";
+void parser(char str[], int* argc, char argv[100][100],char sep[]){
 	char* token;
 	*argc = 0;
 	token = strtok(str,sep);
