@@ -11,14 +11,18 @@ int main(){
 		fgets(input,100,stdin);
 		strcpy(tmpHist,input);
 		parser(input,&argc,argv);
-		switch(functionPointer[classifyInput(argc,argv)](argc,argv)){
+		int caseNum = functionPointer[classifyInput(argc,argv)](argc,argv);
+		switch(caseNum){
 			case INPUT_ERROR:
+				inappropriateInput(argc,argv);
 				break;
 			case INPUT_EXIT:
 				return 0;
 			case INPUT_NORMAL:
 				storeHistory(tmpHist);
 				break;
+			default : 
+				printError(caseNum);
 		}
 	}
 	return 1;
