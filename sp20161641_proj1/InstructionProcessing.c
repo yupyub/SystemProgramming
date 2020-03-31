@@ -50,7 +50,6 @@ int classifyInput(int argv, char argc[100][100]){ // 명령어를 분류
 }
 void storeHistory(char str[]){ // 규칙에 맞는 명령어 저장
 	historyNode* newNode =(historyNode*)malloc(sizeof(historyNode));
-	str[strlen(str)-1] = '\0';
 	strcpy(newNode->str,str);
 	newNode->count = historySet == NULL ? 1 : historySet->count+1;
 	newNode->link = historySet;

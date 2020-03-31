@@ -1,6 +1,7 @@
 #include "20161641.h"
 #define INDEX_MAX 1048575 // 65536*16-1
-#define VALUE_MAX 255 // 16*16-1
+#define VALUE_MIN 32 // 0x20
+#define VALUE_MAX 126 // 0x7E
 unsigned char memory[65536][16] = {0,};
 int isHex(char str[]){ // 16진수인지 확인하기 위해 각각의 char을 검사한다
 	for(int i = 0;i<strlen(str);i++){
@@ -26,7 +27,7 @@ void printMemoryOneLine(int memoryIdx,int s,int e){ // 메모리의 내용물을
 	for(int i = 0;i<s;i++)
 		printf(".");
 	for(int i = s;i<=e;i++)
-		printf("%c",(32<=memory[memoryIdx][i]&&memory[memoryIdx][i]<=126) ? \
+		printf("%c",(VALUE_MIN<=memory[memoryIdx][i]&&memory[memoryIdx][i]<=VALUE_MAX) ? \
 		memory[memoryIdx][i] : '.');
 	for(int i = e+1;i<16;i++)
 		printf(".");
@@ -73,7 +74,7 @@ int editMemory(int argv, char argc[100][100]){ // 메모리의 address 번지의
 	int value = strtol(argc[2],NULL,16);
 	if(address>INDEX_MAX)
 		return MEMORY_ERROR_ADDRESS_EXCEED;
-	if(value>VALUE_MAX)
+	if(value>VALUE_MAX || value < VALUE_MIN)
 		return MEMORY_ERROR_VALUE_EXCEED;
 	// index 예외처리 완료. memory의 address위치에 value 할당
 	memory[address/16][address%16] = value;

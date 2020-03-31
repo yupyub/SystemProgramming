@@ -10,8 +10,9 @@ int main(){
 	while(1){
 		printf("sicsim> ");
 		fgets(input,100,stdin);
+		input[strlen(input)-1] = '\0';
 		strcpy(tmpHist,input);
-		parser(input,&argc,argv,", \n\t");
+		parser(input,&argc,argv,", \t");
 		int caseNum = functionPointer[classifyInput(argc,argv)](argc,argv);
 		switch(caseNum){
 			case INPUT_ERROR:

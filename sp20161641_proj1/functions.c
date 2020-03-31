@@ -16,7 +16,7 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력 (추가�
 
 }
 int inappropriateInput(int argc,char argv[100][100]){ // 적합하지 않은 명령어 처리 (함수 포인터 0)
-	return 0;
+	return INPUT_ERROR;
 }
 int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1) 
 	if(argc != 1)
@@ -31,7 +31,7 @@ int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1)
 	printf("reset\n");
 	printf("opcode mnemonic\n");
 	printf("opcodelist\n");
-	return INPUT_ERROR;
+	return INPUT_NORMAL;
 }
 int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
 	if(argc != 1) 
@@ -79,6 +79,5 @@ int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 
 int quitProgram(int argc, char argv[100][100]){ // 프로그램 종료 (함수 포인터 3)
 	if(argc != 1) 
 		return INPUT_ERROR;
-	printf("Quit Program. Bye!\n"); // 지워야 함
-	return INPUT_EXIT;  // 프로그램 종료를 위해 모든 함수 중 유일하게 0을 return 한다
+	return INPUT_EXIT;  // 프로그램 종료를 위해 INPUT_EXIT return
 }
