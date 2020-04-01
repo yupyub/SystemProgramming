@@ -1,6 +1,6 @@
 #include "20161641.h"
 #define TABLE_MAX (20)
-opcodeNode* hashTable[20];
+opcodeNode* hashTable[TABLE_MAX];
 int returnHash(char str[]){ // string에 해당하는 hash값 반환
 	int hash = 401;
 	for(int i = 0;str[i] != '\0';i++)
@@ -37,7 +37,7 @@ int opcodeMnemonic(int argv, char argc[100][100]){ // 명령어에 해당하는 
 	}
 	return OPCODE_DOESNT_EXIST;
 }
-int recurFindOpcode(opcodeNode *node,char str[]){
+int recurFindOpcode(opcodeNode *node,char str[]){ // 재귀적으로 opcode를 찾는다
 	if(node == NULL)
 		return -1;
 	if(strcmp(node->str,str) == 0)

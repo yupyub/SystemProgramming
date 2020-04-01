@@ -2,7 +2,7 @@
 instructionNode* instructionSet = NULL;
 historyNode* historySet = NULL;
 int (*functionPointer[20])(int,char[100][100])={\
-	inappropriateInput,\
+		inappropriateInput,\
 		help,\
 		printDirectory,\
 		quitProgram,\
@@ -12,7 +12,7 @@ int (*functionPointer[20])(int,char[100][100])={\
 		fillMemory,\
 		resetMemory,\
 		opcodeMnemonic,\
-		opcodeList};
+		opcodeList}; // 명령어에 대응하는 함수들의 함수포인터를 저장하는 배열
 
 void instructionSetInit(){ // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 	FILE *fp = fopen("operations.txt","r");
@@ -42,7 +42,7 @@ int classifyInput(int argv, char argc[100][100]){ // 명령어를 분류
 	if(argv == 0)
 		return INPUT_ERROR;
 	for(instructionNode *tempNode=instructionSet;tempNode != NULL;tempNode = tempNode->link){
-		if(strcmp(tempNode->str,*argc))
+		if(strcmp(tempNode->str,*argc)) 
 			continue;
 		return tempNode->caseNum;
 	}
@@ -60,7 +60,7 @@ int printHistory(int argc, char argv[100][100]){ // 명령어 기록 출력 (함
 	if(argc != 1)
 		return INPUT_ERROR;
 	recurPrintOneHistory(historySet);
-	printf("%-7d %s\n",historySet==NULL ? 1 : historySet->count+1,argv[0]); // 자신을 호출한 hist 명령어 출력해야 함: 
+	printf("%-7d %s\n",historySet==NULL ? 1 : historySet->count+1,argv[0]); // 자신을 호출한 hist 명령어 출력해야 함 
 	return INPUT_NORMAL;
 }
 void recurPrintOneHistory(historyNode *history){ // 재귀적으로 하나씩 출력

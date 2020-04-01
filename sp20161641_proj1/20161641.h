@@ -1,5 +1,5 @@
-#ifndef MY1641
-#define MY1641
+#ifndef MY20161641
+#define MY20161641
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
@@ -7,51 +7,58 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <sys/stat.h>
-
-//////////////////////////////////
+////////
 #define MAX(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })  
 #define MIN(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })  
-/////////////////////////////////
+////////
+// 입력 관련 에러
 #define INPUT_ERROR (0)
-#define INPUT_EXIT (2)
 #define INPUT_NORMAL (1)
-//
+#define INPUT_EXIT (2)
+////////
+// 메모리 명령어 관련 에러
 #define MEMORY_ERROR_VALUE_EXCEED (3)
 #define MEMORY_ERROR_ADDRESS_EXCEED (4) 
 #define MEMORY_ERROR_ADDRESS_START_END (5)
-//
+////////
+// opcode 관련 에러 
 #define OPCODE_DOESNT_EXIST (6)
-//
+////////
 typedef struct _instructionNode{
 	char str[100];
 	int caseNum;
 	struct _instructionNode* link;
-}instructionNode;
+}instructionNode; // instruction을 저장하는 linked list의 노드
 typedef struct _historyNode{
 	int count;
 	char str[100];
 	struct _historyNode* link;
-}historyNode;
+}historyNode; // history를 저장하는 linked list의 노드
 typedef struct _opcodeNode{
 	int opcode;
 	char str[100];
 	int val[2];
 	struct _opcodeNode* link;
-}opcodeNode;
+}opcodeNode; // opcode를 저장하는 linked list의 노드
 
+////////
+// functions in InstructionProcessing.c
 void instructionSetInit(); // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 void loadOneInstruction(FILE*, instructionNode**); // 재귀적으로 명령어 리스트 생성 
 void parser(char str[], int* argv, char argc[100][100], char sep[]); // 문자열을 파싱
 int classifyInput(int argv, char argc[100][100]); // 명령어를 분류 
 void storeHistory(char str[]);// 규칙에 맞는 명령어 저장
-void printError(int errorCase); // 에러 종류별 에러구문 출력 (추가구현)
+int printHistory(int argv, char argc[100][100]); // 명령어 기록 출력 (함수 포인터 4)
+void recurPrintOneHistory(historyNode* history); // 재귀적으로 하니씩 출력
+////////
+////////
+// functions in functions.c
+void printError(int errorCase); // 에러 종류별 에러구문 출력
 int inappropriateInput(int argv, char argc[100][100]); // 적합하지 않은 명령어 처리 (함수 포인터 0)
 int help(int argv, char argc[100][100]); // 도움말 출력 (함수 포인터 1)
 int printDirectory(int argv, char argc[100][100]); // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
 int quitProgram(int argv, char argc[100][100]); // 프로그램 종료 (함수 포인터 3)
-int printHistory(int argv, char argc[100][100]); // 명령어 기록 출력 (함수 포인터 4)
-void recurPrintOneHistory(historyNode* history); // 재귀적으로 하니씩 출력
-
+////////
 ////////
 // functions in MemoryInstructions.c 
 int isHex(char str[]); // 16진수인지 확인하기 위해 각각의 char을 검사한다
