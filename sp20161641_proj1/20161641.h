@@ -44,7 +44,7 @@ typedef struct _opcodeNode{
 ////////
 // functions in InstructionProcessing.c
 void instructionSetInit(); // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
-void loadOneInstruction(FILE*, instructionNode**); // 재귀적으로 명령어 리스트 생성 
+void loadOneInstruction(FILE *fp,instructionNode **instSet); // 재귀적으로 명령어 리스트 생성
 void parser(char str[], int* argv, char argc[100][100], char sep[]); // 문자열을 파싱
 int classifyInput(int argv, char argc[100][100]); // 명령어를 분류 
 void storeHistory(char str[]);// 규칙에 맞는 명령어 저장
