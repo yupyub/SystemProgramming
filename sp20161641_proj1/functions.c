@@ -16,7 +16,7 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 
 }
 int inappropriateInput(int argc,char argv[100][100]){ // 적합하지 않은 명령어 처리 (함수 포인터 0)
-	if(argc != 0) 
+	if(argc != 0) // 바로 엔터를 입력한 경우 제외
 		printf("INAPPROPRIATE INPUT\n");
 	return ERROR_CHECKED;
 }
