@@ -16,10 +16,6 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 
 }
 int inappropriateInput(int argc,char argv[100][100]){ // 적합하지 않은 명령어 처리 (함수 포인터 0)
-// 이번 프로젝트에서는 잘못된 구문인 경우 아무것도 출력하지 말라느 조건이 있어서 비워두었음
-// 이후 추가적으로 명령어의 어떤 부분이 틀렸는지 출력해줄 수 있음
-// eg. helo 입력시 help를 잘못 치려던 것으로 볼 수 있음
-//     따라서 help를 치라고 알려줌 
 	printf("INAPPROPRIATE INPUT\n");
 	return ERROR_CHECKED;
 }
