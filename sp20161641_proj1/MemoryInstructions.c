@@ -72,7 +72,7 @@ int editMemory(int argv, char argc[100][100]){ // 메모리의 address 번지의
 			return INPUT_ERROR;
 	int address = strtol(argc[1],NULL,16);
 	int value = strtol(argc[2],NULL,16);
-	if(address>INDEX_MAX)
+	if(address>INDEX_MAX || address<0)
 		return MEMORY_ERROR_ADDRESS_EXCEED;
 	if(value>255|| value < 0)
 		return MEMORY_ERROR_VALUE_EXCEED;
@@ -93,7 +93,7 @@ int fillMemory(int argv, char argc[100][100]){ // start 번지부터 end 번지�
 	value = strtol(argc[3],NULL,16);
 	if(index[0]>index[1])
 		return MEMORY_ERROR_ADDRESS_START_END;
-	if(index[1]>INDEX_MAX)
+	if(index[1]>INDEX_MAX || index[0]<0)
 		return MEMORY_ERROR_ADDRESS_EXCEED;
 	if(value>255|| value < 0)
 		return MEMORY_ERROR_VALUE_EXCEED;
