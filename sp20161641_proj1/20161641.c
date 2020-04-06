@@ -18,6 +18,8 @@ int main(){
 			case INPUT_ERROR: // 입력이 잘못 들어온 경우
 				inappropriateInput(argc,argv);
 				break;
+			case ERROR_CHECKED: // 에러 처리를 완료한 경우
+				break;
 			case INPUT_EXIT: // quit, q 명령어가 입력된 경우
 				return 0; // 프로그램 종료 (정상적으로 종료 : retuen 0)
 			case INPUT_NORMAL: // 적합한 명령어가 입력되어 정상적으로 처리가 완료된 경우

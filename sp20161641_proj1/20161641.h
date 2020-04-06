@@ -12,6 +12,7 @@
 #define MIN(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })  
 ////////
 // 입력 관련 에러
+#define ERROR_CHECKED (-1)
 #define INPUT_ERROR (0)
 #define INPUT_NORMAL (1)
 #define INPUT_EXIT (2)

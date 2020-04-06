@@ -20,7 +20,8 @@ int inappropriateInput(int argc,char argv[100][100]){ // 적합하지 않은 명
 // 이후 추가적으로 명령어의 어떤 부분이 틀렸는지 출력해줄 수 있음
 // eg. helo 입력시 help를 잘못 치려던 것으로 볼 수 있음
 //     따라서 help를 치라고 알려줌 
-	return INPUT_ERROR;
+	printf("INAPPROPRIATE INPUT\n");
+	return ERROR_CHECKED;
 }
 int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1) 
 	if(argc != 1)
