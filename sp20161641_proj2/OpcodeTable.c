@@ -24,14 +24,21 @@ void makeOpcodeTable(){ // opcode hash table을 만든다
 	}
 	fclose(fp);
 }
-int retOpcode(char str[100]){ // 명령어에 해당하는 opcode를 반환
-	int tmp;
+opcodeNode* retOpcode(char str[100]){ // 명령어에 해당하는 opcode 구조체를 반환
+	opcodeNode* tmp = NULL;
 	for(int i = 0;i<TABLE_MAX;i++){
-		tmp = recurFindOpcode(hashTable[i],str);
-		if(tmp!=-1)
+		tmp = recurFindOpcodeNode(hashTable[i],str);
+		if(tmp!=NULL)
 			return tmp;
 	}
-	return -1;
+	return NULL;
+}
+opcodeNode* recurFindOpcodeNode(opcodeNode *node,char str[]){ // 재귀적으로 opcode를 찾는다
+	if(node == NULL)
+		return NULL;
+	if(strcmp(node->str,str) == 0)
+		return node;
+	return recurFindOpcodeNode(node->link,str);
 }
 int opcodeMnemonic(int argv, char argc[100][100]){ // 명령어에 해당하는 opcode를 출력
 	if(argv != 2)

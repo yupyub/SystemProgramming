@@ -1,10 +1,9 @@
 #include "20161641.h"
 lstNode lstArr[1000];
 int lstArrSize = 0;
-SymbolNode SymbolSet = NULL;
-
+symbolNode* symbolSet = NULL;
 void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
-	SymbolSet = NULL; // 이후free 추가
+	symbolSet = NULL; // 이후free 추가
 	for(int i = 0;i<lstArrSize;i++){
 		lstArr[i].locCount = 0;
 		lstArr[i].str[0] = 0;
@@ -19,7 +18,7 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	FILE *fp = fopen(argc[1],"r");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
-	int err = makeLocattionCount(fp);
+	int err = makeLocationCount(fp);
 	fclose(fp);
 	if(err != 0)
 		return err;
@@ -52,41 +51,104 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 	int argc = 0;
 	char argv[100][100];
 	int locCount = 0,locTemp = 0;
-	int symFlag = 0,commentFlag = 0;
+	int symFlag = 0;
 	while(fgets(str,100,fp)!=NULL){
+		str[strlen(str)-1] = '\0';
+		strcpy(lstArr[lstArrSize].str,str);
 		if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
 		else symFlag = 0;
-		if(str[0] == '.'){
-			lstArr[lstArrSize].
-
+		printf("%s : %d\n",str,symFlag);
+		if(str[0] == '.'){ // Comment
+			lstArr[lstArrSize].locCount = -1;
+			lstArr[lstArrSize].objCode = -1;
+			lstArrSize++;
+			continue;
 		}
-		parser(str,&argc,argv,", \t\n");
+		parser(str,&argc,argv,", \t");
 		if(strcmp("START",argv[symFlag]) == 0){
 			locCount = atoi(argv[symFlag+1]);
 			locTemp = locCount;
-			//////
+			lstArr[lstArrSize].locCount = locCount;
+			lstArr[lstArrSize].objCode = -1;
+			lstArrSize++;
 			continue;
 		}
 		if(strcmp("END",argv[symFlag]) == 0){
-			locTemp = retLocCount(argv[0]);
-		if(locTemp == -1
-
-
-
-
-
-
+			lstArr[lstArrSize].locCount = -1;
+			lstArr[lstArrSize].objCode = -1;
+			lstArrSize++;
+			break;
+		}
+		if(strcmp("BASE",argv[symFlag]) == 0){
+			lstArr[lstArrSize].locCount = -1;
+			lstArr[lstArrSize].objCode = -1;
+			lstArrSize++;
+			continue;
+		}
+		locTemp = retLocCount(argc,argv,symFlag);
+		if(locTemp == -1){ 				// ERROR CASE
+			printf("LINE : (%d) :",lstArrSize);
+			return ASSEM_OPCODE_ERROR;
+		}
+		lstArr[lstArrSize].locCount = locCount;
+		lstArr[lstArrSize].objCode = 0;	
+		if(symFlag&&!storeSymbol(argv[0],locCount,lstArrSize,&symbolSet,&symbolSet)){
+			printf("LINE : (%d) :",lstArrSize);
+			return ASSEM_SYMBOL_DUPLICATION_ERROR;
+		}
+		lstArrSize++;
+		locCount += locTemp;
+	}
 	return 0;
 }
-int retLocCount(char str[]){ // 각 줄이 얼만큼의 크기를 갖는지 return한다
-// START : return -1
-// END : return -2
-// BYTE : 
-
-
+int retLocCount(int argc,char argv[100][100],int symFlag){ // 각 operation이 얼만큼의 크기를 갖는지 return한다
+	if(strcmp("WORD",argv[symFlag]) == 0)
+		return 3;
+	else if(strcmp("RESW",argv[symFlag]) == 0)
+		return 3*atoi(argv[symFlag+1]);
+	else if(strcmp("RESB",argv[symFlag]) == 0)
+		return atoi(argv[symFlag]);
+	else if(strcmp("BYTE",argv[symFlag]) == 0){
+		if(argv[symFlag+1][0] == 'C')
+			return strlen(argv[symFlag+1])-1;		
+		else if(argv[symFlag+1][0] == 'X')
+			return 1;
+		else return 0;
+	}
+	int plusFlag = 0;
+	char str[100];
+	if(argv[symFlag][0] == '+'){
+		plusFlag = 1;
+		strcpy(str,argv[symFlag]+1);
+	}
+	else
+		strcpy(str,argv[symFlag]);
+	opcodeNode* opTemp = retOpcode(str);
+	if(opTemp == NULL)
+		return -1;
+	return opTemp->val[plusFlag];
 }
-void storeSymbol(char str[], int locCount){ // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
-
+int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolNode** sPrev){ // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
+	if((*sNow) != NULL){
+		int cmp = strcmp((*sNow)->str,str);
+		if(cmp == 0) return 0;
+		else if(cmp < 0) {
+			return storeSymbol(str,locCount,arrIdx,&((*sNow)->link),sNow);
+		}
+	}
+	symbolNode* newNode =(symbolNode*)malloc(sizeof(symbolNode));
+	strcpy(newNode->str,str);
+	newNode->locCount = locCount;
+	newNode->arrIdx = arrIdx;
+	if((*sPrev)!= NULL){
+		newNode->link = (*sNow);
+		(*sPrev)->link=newNode;
+	}
+	else{
+		newNode->link = NULL;
+		(*sPrev) = newNode;
+	}
+	return 1;
 }
 void makeListing(FILE *fp){ // listing file을 만든다
 
@@ -97,8 +159,12 @@ void makeObject(FILE *fp){ // object file을 만든다
 int printSymbol(int argv, char argc[100][100]){ // symbol table을 출력한다
 	if(argv != 1)
 		return INPUT_ERROR;
-	
-
-
+	recurPrintSymbol(symbolSet);
 	return INPUT_NORMAL;
+}
+void recurPrintSymbol(symbolNode *node){ // 재귀적으로 하나씩 출력
+	if(node==NULL)
+		return;
+	printf("\t%-9s%04X\n",node->str,node->locCount);
+	recurPrintSymbol(node->link);
 }
