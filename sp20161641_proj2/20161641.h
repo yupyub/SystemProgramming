@@ -44,7 +44,28 @@ typedef struct _opcodeNode{
 	int val[2];
 	struct _opcodeNode* link;
 }opcodeNode; // opcode를 저장하는 linked list의 노드
+typedef struct _lstNode{
+	int locCount;
+	char str[50];
+	int objCode;
+}lstNode;
+typedef struct _symbolNode{
+	int locCount;
+	char str[50];
+	struct _symbolNode* link;
+}symbolNode;
+////////
+// functions in assembleFunc.c
+void initAssemble(); // lstNode 배열과 Symbol 리스트를 초기화 한다
+int assembleFile(int argv, char argc[100][100]); // 입력받은 파일의 object file과 listing file을 만든다
+int makeLocationCount(FILE *fp); // location count를 할당하고, symbol table을 만든다
+int retLocCount(char str[]); // 각 줄이 얼만큼의 크기를 갖는지 return한다
+void storeSymbol(char str[], int locCount); // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
+void makeListing(FILE *fp); // listing file을 만든다
+void makeObject(FILE *fp); // object file을 만든다
+int printSymbol(int argv, char argc[100][100]); // symbol table을 출력한다
 
+////////
 ////////
 // functions in InstructionProcessing.c
 void instructionSetInit(); // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
@@ -77,6 +98,7 @@ int resetMemory(int argv, char argc[100][100]); // 메모리 전체를 전부 0�
 // functions in OpcodeTable.c
 int returnHash(char str[]); // string에 해당하는 hash값 반환
 void makeOpcodeTable(); // opcode hash table을 만든다
+int retOpcode(char str[100]); // 명령어에 해당하는 opcode를 반환
 int opcodeMnemonic(int argv, char argc[100][100]); // 명령어에 해당하는 opcode를 출력
 int recurFindOpcode(opcodeNode *node, char str[]); // 재귀적으로 opcode를 찾는다
 int opcodeList(int argv, char argc[100][100]); // opcode hash table을 출력

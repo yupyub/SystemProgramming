@@ -16,3 +16,5 @@ reset 8
 opcode 9
 opcodelist 10
 type 11
+assemble 12
+symbol 13

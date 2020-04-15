@@ -24,6 +24,15 @@ void makeOpcodeTable(){ // opcode hash table을 만든다
 	}
 	fclose(fp);
 }
+int retOpcode(char str[100]){ // 명령어에 해당하는 opcode를 반환
+	int tmp;
+	for(int i = 0;i<TABLE_MAX;i++){
+		tmp = recurFindOpcode(hashTable[i],str);
+		if(tmp!=-1)
+			return tmp;
+	}
+	return -1;
+}
 int opcodeMnemonic(int argv, char argc[100][100]){ // 명령어에 해당하는 opcode를 출력
 	if(argv != 2)
 		return INPUT_ERROR;
