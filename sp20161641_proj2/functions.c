@@ -22,6 +22,8 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case ASSEM_SYMBOL_DUPLICATION_ERROR:
 			printf("ASSEMBLER CODE : SYMBOL DUPLICATED\n");
 			break;
+		case ASSEM_BASE_NAME_ERROR:
+			printf("ASSEMBLER CODE : WRONG BASE NAME\n");
 	}
 
 }

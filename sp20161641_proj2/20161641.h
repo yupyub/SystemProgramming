@@ -32,6 +32,7 @@
 // assembler 관련 에러
 #define ASSEM_OPCODE_ERROR (8)
 #define ASSEM_SYMBOL_DUPLICATION_ERROR (9)
+#define ASSEM_BASE_NAME_ERROR (10)
 ////////
 typedef struct _instructionNode{
 	char str[100];
@@ -52,7 +53,8 @@ typedef struct _opcodeNode{
 typedef struct _lstNode{
 	int locCount;
 	char str[50];
-	int objCode;
+	long long objCode;
+	char objStr[10];
 }lstNode;
 typedef struct _symbolNode{
 	int locCount;
@@ -70,6 +72,7 @@ int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolN
 void makeListing(FILE *fp); // listing file을 만든다
 void makeObject(FILE *fp); // object file을 만든다
 int printSymbol(int argv, char argc[100][100]); // symbol table을 출력한다
+int recurFindSymbol(char str[],symbolNode *node); // 재귀적으로 symbol을 탐색
 void recurPrintSymbol(symbolNode *node); // 재귀적으로 하나씩 출력
 ////////
 ////////

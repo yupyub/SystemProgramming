@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall 
+CFLAGS = 
 TARGET = 20161641.out
 OBJECTS = 20161641.o functions.o InstructionProcessing.o MemoryInstructions.o OpcodeTable.o assembleFunc.o
 

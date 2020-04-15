@@ -1,6 +1,7 @@
 #include "20161641.h"
 lstNode lstArr[1000];
-int lstArrSize = 0;
+int lstArrSize = 0, baseIdx = 0, baseLine = 0;
+char baseName[50];
 symbolNode* symbolSet = NULL;
 void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
 	symbolSet = NULL; // 이후free 추가
@@ -9,7 +10,7 @@ void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
 		lstArr[i].str[0] = 0;
 		lstArr[i].objCode = 0;
 	}
-	lstArrSize = 0;
+	lstArrSize = baseIdx = baseLine = 0;
 }
 int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 object file과 listing file을 만든다
 	if(argv != 2)
@@ -81,7 +82,9 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 		if(strcmp("BASE",argv[symFlag]) == 0){
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
+			baseLine = lstArrSize;
 			lstArrSize++;
+			strcpy(baseName,argv[symFlag+1]);
 			continue;
 		}
 		locTemp = retLocCount(argc,argv,symFlag);
@@ -95,9 +98,14 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			printf("LINE : (%d) :",lstArrSize);
 			return ASSEM_SYMBOL_DUPLICATION_ERROR;
 		}
-		printf("%04X   %s\n",lstArr[lstArrSize].locCount,lstArr[lstArrSize].str);
 		lstArrSize++;
 		locCount += locTemp;
+	}
+	baseIdx = recurFindSymbol(baseName,symbolSet);
+	if(baseIdx == -1){
+		baseIdx = 0;
+		printf("LINE : (%d) :",baseLine);
+		return ASSEM_BASE_NAME_ERROR;
 	}
 	return 0;
 }
@@ -155,8 +163,93 @@ int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolN
 	return 1;
 }
 void makeListing(FILE *fp){ // listing file을 만든다
+	int argc = 0,symFlag = 0;
+	char argv[100][100];
+	char str[100],tmp[100];
+	int op1,op2;
+	int n,ii,x,b,p,e;
+	int disp,addr;
+	for(int i = 0;i<lstArrSize;i++){
+		op1 = op2 = n = ii = x = b = p = e = disp = addr = 0;
+		if(lstArr[i].objCode != -1){
+			strcpy(str,lstArr[i].str);
+			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
+			else symFlag = 0;
+			parser(str,&argc,argv,", \t");
+			if(strcmp("WORD",argv[symFlag]) == 0){
+				lstArr[i].objCode = (long long)atoi(argv[symFlag+1]);
+			}
+			else if(strcmp("RESW",argv[symFlag]) == 0){
+				lstArr[i].objCode = -1;		
+			}
+			else if(strcmp("RESB",argv[symFlag]) == 0){
+				lstArr[i].objCode = -1;		
+			}
+			else if(strcmp("BYTE",argv[symFlag]) == 0){
+				int j = 2;
+				if(argv[symFlag+1][0] == 'C'){
+					while(argv[symFlag+1][j] != '\'' && argv[symFlag+1][j] != '\0'){
+						disp *= 16*16;
+						disp += argv[symFlag+1][j];
+						j++;
+					}
+					lstArr[i].objCode = disp;		
+				}
+				else if(argv[symFlag+1][0] == 'X'){
+					while(argv[symFlag+1][j] != '\'' && argv[symFlag+1][j] != '\0'){
+						tmp[j-2] = argv[symFlag+1][j];
+						j++;
+					}
+					tmp[j-2] = '\0';
+					lstArr[i].objCode = -2;
+					strcpy(lstArr[i].objStr,tmp);
+				}
+				// else // error case
+			}
+			else{
+				if(argv[symFlag][0] == '+'){
+					e = 1;
+					strcpy(tmp,argv[symFlag]+1);
+				}
+				else
+					strcpy(tmp,argv[symFlag]);
+				opcodeNode* opTemp = retOpcode(tmp);
+				op2 = opTemp->opcode;
+				op1 = op2/16;
+				op2 %= 16;
+				op2 /= 4;
+////////////////////////////////////////
 
+
+
+////////////////////////////////////////
+				
+
+
+
+
+			}
+		}
+		///////////////////////////////////////////// 출력
+		fprintf(fp,"%-7d ",i*5+5);
+		if(lstArr[i].locCount == -1)
+			fprintf(fp,"    ");
+		else
+			fprintf(fp,"%04X",lstArr[i].locCount);
+		fprintf(fp,"  %s",lstArr[i].str);
+		if(lstArr[i].objCode == -1)
+			fprintf(fp,"\n");
+		else{
+			for(int j = (int)strlen(lstArr[i].str);j<30;j++)
+				fprintf(fp," ");	
+			if(lstArr[i].objCode != -2)
+				fprintf(fp,"%llX\n",lstArr[i].objCode);
+			else
+				fprintf(fp,"%s\n",lstArr[i].objStr);
+		}
+	}
 }
+
 void makeObject(FILE *fp){ // object file을 만든다
 
 }
@@ -165,6 +258,13 @@ int printSymbol(int argv, char argc[100][100]){ // symbol table을 출력한다
 		return INPUT_ERROR;
 	recurPrintSymbol(symbolSet);
 	return INPUT_NORMAL;
+}
+int recurFindSymbol(char str[],symbolNode *node){ // 재귀적으로 symbol을 탐색
+	if(node==NULL)
+		return -1;
+	if(strcmp(node->str,str) == 0) 
+		return node->arrIdx;
+	return recurFindSymbol(str,node->link);
 }
 void recurPrintSymbol(symbolNode *node){ // 재귀적으로 하나씩 출력
 	if(node==NULL)
