@@ -57,7 +57,6 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 		strcpy(lstArr[lstArrSize].str,str);
 		if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
 		else symFlag = 0;
-		printf("%s : %d\n",str,symFlag);
 		if(str[0] == '.'){ // Comment
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
@@ -96,6 +95,7 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			printf("LINE : (%d) :",lstArrSize);
 			return ASSEM_SYMBOL_DUPLICATION_ERROR;
 		}
+		printf("%04X   %s\n",lstArr[lstArrSize].locCount,lstArr[lstArrSize].str);
 		lstArrSize++;
 		locCount += locTemp;
 	}
@@ -107,10 +107,10 @@ int retLocCount(int argc,char argv[100][100],int symFlag){ // 각 operation이 �
 	else if(strcmp("RESW",argv[symFlag]) == 0)
 		return 3*atoi(argv[symFlag+1]);
 	else if(strcmp("RESB",argv[symFlag]) == 0)
-		return atoi(argv[symFlag]);
+		return atoi(argv[symFlag+1]);
 	else if(strcmp("BYTE",argv[symFlag]) == 0){
 		if(argv[symFlag+1][0] == 'C')
-			return strlen(argv[symFlag+1])-1;		
+			return strlen(argv[symFlag+1])-3;		
 		else if(argv[symFlag+1][0] == 'X')
 			return 1;
 		else return 0;
@@ -140,13 +140,17 @@ int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolN
 	strcpy(newNode->str,str);
 	newNode->locCount = locCount;
 	newNode->arrIdx = arrIdx;
-	if((*sPrev)!= NULL){
-		newNode->link = (*sNow);
-		(*sPrev)->link=newNode;
-	}
-	else{
+	if((*sNow)== NULL && (*sPrev) == NULL){
 		newNode->link = NULL;
 		(*sPrev) = newNode;
+	}
+	else if((*sNow) == (*sPrev)){
+		newNode->link = (*sNow);
+		(*sPrev)=newNode;
+	}
+	else {
+		newNode->link = (*sNow);
+		(*sPrev)->link = newNode;
 	}
 	return 1;
 }
