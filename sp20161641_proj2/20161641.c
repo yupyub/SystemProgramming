@@ -12,7 +12,7 @@ int main(){
 		fgets(input,100,stdin);
 		input[strlen(input)-1] = '\0'; // fgets는 개행까지 읽어들임으로 개행을 '\0'으로 변경
 		strcpy(tmpHist,input);
-		parser(input,&argc,argv,", \t"); // 명령어 파싱
+		parser(input,&argc,argv,", \f\n\r\t\v"); // 명령어 파싱
 		int caseNum = functionPointer[classifyInput(argc,argv)](argc,argv);
 		switch(caseNum){
 			case INPUT_ERROR: // 입력이 잘못 들어온 경우

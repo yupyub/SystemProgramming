@@ -64,7 +64,7 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			lstArrSize++;
 			continue;
 		}
-		parser(str,&argc,argv,", \t");
+		parser(str,&argc,argv,", \f\n\r\t\v");
 		if(strcmp("START",argv[symFlag]) == 0){
 			locCount = atoi(argv[symFlag+1]);
 			locTemp = locCount;
@@ -175,7 +175,7 @@ void makeListing(FILE *fp){ // listing file을 만든다
 			strcpy(str,lstArr[i].str);
 			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
 			else symFlag = 0;
-			parser(str,&argc,argv,", \t");
+			parser(str,&argc,argv,", \f\n\r\t\v");
 			if(strcmp("WORD",argv[symFlag]) == 0){
 				lstArr[i].objCode = (long long)atoi(argv[symFlag+1]);
 			}

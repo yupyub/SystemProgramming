@@ -11,17 +11,20 @@ void makeOpcodeTable(){ // opcode hash table을 만든다
 	FILE *fp = fopen("opcode.txt","r");
 	int argc,hashNum;
 	char str[100],argv[100][100];
+	//fflush(stdout);
 	while(fgets(str,99,fp)!=NULL){
-		str[strlen(str)-1] = '\0';
-		parser(str,&argc,argv," /\t\n");
+		if(str[strlen(str)-1] == '\n')
+			str[strlen(str)-1] = '\0';
+		parser(str,&argc,argv," /\f\n\r\t\v");
 		opcodeNode *newNode = (opcodeNode*)malloc(sizeof(opcodeNode));
 		strcpy(newNode->str,argv[1]);
 		newNode->opcode = strtol(argv[0],NULL,16);
 		newNode->val[0] = atoi(argv[2]);
-		newNode->val[1] = (argc >= 4 ? atoi(argv[3]):0);
+		newNode->val[1] = (argc == 4 ? atoi(argv[3]):0);
 		hashNum = returnHash(newNode->str);
 		newNode->link = hashTable[hashNum];
 		hashTable[hashNum] = newNode;
+		//fflush(stdout);
 	}
 	fclose(fp);
 }
