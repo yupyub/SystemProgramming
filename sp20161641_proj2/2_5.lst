@@ -21,17 +21,17 @@
 105           .
 110           .      SUBROUTINE TO READ RECORD INTO BUFFER
 115           .
-120     1036  RDREC  CLEAR  X               0
-125     1038         CLEAR  A               0
-130     103A         CLEAR  S               0
+120     1036  RDREC  CLEAR  X               B410
+125     1038         CLEAR  A               B400
+130     103A         CLEAR  S               B440
 135     103C         +LDT   #4096           0
 140     1040  RLOOP  TD     INPUT           0
 145     1043         JEQ    RLOOP           0
 150     1046         RD     INPUT           0
-155     1049         COMPR  A, S            0
+155     1049         COMPR  A, S            A004
 160     104B         JEQ    EXIT            0
 165     104E         STCH   BUFFER, X       0
-170     1051         TIXR   T               0
+170     1051         TIXR   T               B850
 175     1053         JLT    RLOOP           0
 180     1056  EXIT   STX    LENGTH          0
 185     1059         RSUB                   0
@@ -39,13 +39,13 @@
 195           .
 200           .      SUBROUTINE TO WRITE RECORD FROM BUFFER
 205           .
-210     105D  WRREC  CLEAR  X               0
+210     105D  WRREC  CLEAR  X               B410
 215     105F         LDT    LENGTH          0
 220     1062  WLOOP  TD     OUTPUT          0
 225     1065         JEQ    WLOOP           0
 230     1068         LDCH   BUFFER, X       0
 235     106B         WD     OUTPUT          0
-240     106E         TIXR   T               0
+240     106E         TIXR   T               B850
 245     1070         JLT    WLOOP           0
 250     1073         RSUB                   0
 255     1076  OUTPUT BYTE   X'05'           05

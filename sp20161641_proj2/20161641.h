@@ -70,6 +70,7 @@ int makeLocationCount(FILE *fp); // location count를 할당하고, symbol table
 int retLocCount(int argc,char argv[100][100],int symFlag); // 각 operation이 얼만큼의 크기를 갖는지 return한다
 int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolNode** sPrev); // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
 void makeListing(FILE *fp); // listing file을 만든다
+int retRegister(char str[]); // string에 해당하는 register return
 void makeObject(FILE *fp); // object file을 만든다
 int printSymbol(int argv, char argc[100][100]); // symbol table을 출력한다
 int recurFindSymbol(char str[],symbolNode *node); // 재귀적으로 symbol을 탐색

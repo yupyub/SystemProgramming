@@ -24,6 +24,7 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 			break;
 		case ASSEM_BASE_NAME_ERROR:
 			printf("ASSEMBLER CODE : WRONG BASE NAME\n");
+			break;
 	}
 
 }

@@ -162,6 +162,28 @@ int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolN
 	}
 	return 1;
 }
+int retRegister(char str[]){ // string에 해당하는 register return
+	if(strcmp(str,"A") == 0)
+		return 0;
+	else if(strcmp(str,"B") == 0)
+		return 3;
+	else if(strcmp(str,"X") == 0)
+		return 1;
+	else if(strcmp(str,"S") == 0)
+		return 4;
+	else if(strcmp(str,"L") == 0)
+		return 2;
+	else if(strcmp(str,"T") == 0)
+		return 5;
+	else if(strcmp(str,"PC") == 0)
+		return 8;
+	else if(strcmp(str,"F") == 0)
+		return 6;
+	else if(strcmp(str,"SW") == 0)
+		return 9;
+	else
+		return 0;
+}
 void makeListing(FILE *fp){ // listing file을 만든다
 	int argc = 0,symFlag = 0;
 	char argv[100][100];
@@ -176,6 +198,8 @@ void makeListing(FILE *fp){ // listing file을 만든다
 			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
 			else symFlag = 0;
 			parser(str,&argc,argv,", \f\n\r\t\v");
+			for(int i = argc;i<100;i++)
+				argv[i][0] = 0;
 			if(strcmp("WORD",argv[symFlag]) == 0){
 				lstArr[i].objCode = (long long)atoi(argv[symFlag+1]);
 			}
@@ -218,16 +242,25 @@ void makeListing(FILE *fp){ // listing file을 만든다
 				op1 = op2/16;
 				op2 %= 16;
 				op2 /= 4;
-////////////////////////////////////////
-
-
-
-////////////////////////////////////////
-				
-
-
-
-
+				switch(opTemp->val[e]){
+					case 1:
+						lstArr[i].objCode = opTemp->opcode;
+						break;
+					case 2: 
+						op2*=4;
+						lstArr[i].objCode=op1;
+						lstArr[i].objCode*=16;
+						lstArr[i].objCode+=op2;
+						lstArr[i].objCode*=16;
+						lstArr[i].objCode+=retRegister(argv[symFlag+1]);
+						lstArr[i].objCode*=16;
+						lstArr[i].objCode+=retRegister(argv[symFlag+2]);
+						break;
+					case 3:
+						break;
+					case 4:
+						break;
+				}
 			}
 		}
 		///////////////////////////////////////////// 출력
