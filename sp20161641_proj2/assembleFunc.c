@@ -194,7 +194,6 @@ void makeListing(FILE *fp){ // listing file을 만든다
 	int addrIdx;
 	for(int i = 0;i<lstArrSize;i++){
 		op1 = op2 = n = ii = x = b = p = e = disp = addr = 0;
-
 		if(lstArr[i].objCode != -1){
 			strcpy(str,lstArr[i].str);
 			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
@@ -244,68 +243,91 @@ void makeListing(FILE *fp){ // listing file을 만든다
 				op1 = op2/16;
 				op2 %= 16;
 				op2 /= 4;
-				switch(opTemp->val[e]){
-					case 1:
-						lstArr[i].objCode = opTemp->opcode;
-						break;
-					case 2: 
-						op2*=4;
-						lstArr[i].objCode=op1;
-						lstArr[i].objCode*=16;
-						lstArr[i].objCode+=op2;
-						lstArr[i].objCode*=16;
-						lstArr[i].objCode+=retRegister(argv[symFlag+1]);
-						lstArr[i].objCode*=16;
-						lstArr[i].objCode+=retRegister(argv[symFlag+2]);
-						break;
-					case 3:
-						if(argc>1+symFlag){
-							if(argv[symFlag+1][0] == '#'){
-								n = 0, ii = 1;
-								strcpy(tmp,argv[symFlag+1]+1);
-							}
-							else if(argv[symFlag+1][0] == '@'){
-								n = 1, ii = 0;
-								strcpy(tmp,argv[symFlag+1]+1);
-							}
-							else{
-								n = 1, ii = 1;
-								strcpy(tmp,argv[symFlag+1]);
-							}
-							if(argc == 3+symFlag)
-								x = 1;
-							addrIdx = recurFindSymbol(tmp,symbolSet);
-							if(addrIdx == -1){
-								disp = atoi(tmp); // 숫자가 아닌경우 error check 해줘야 함
-							}
-							else{
-								
-
-							}
+				if(opTemp->val[e] == 1){
+					lstArr[i].objCode = opTemp->opcode;
+				}
+				else if(opTemp->val[e] == 2){
+					op2*=4;
+					lstArr[i].objCode=op1;
+					lstArr[i].objCode*=16;
+					lstArr[i].objCode+=op2;
+					lstArr[i].objCode*=16;
+					lstArr[i].objCode+=retRegister(argv[symFlag+1]);
+					lstArr[i].objCode*=16;
+					lstArr[i].objCode+=retRegister(argv[symFlag+2]);
+				}
+				else if(opTemp->val[e] == 3 || opTemp->val[e] == 4){
+					if(argc>1+symFlag){
+						if(argv[symFlag+1][0] == '#'){
+							n = 0, ii = 1;
+							strcpy(tmp,argv[symFlag+1]+1);
 						}
-						
-						lstArr[i].objCode=op1;
-						lstArr[i].objCode*=4;
-						lstArr[i].objCode+=op2;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=n;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=ii;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=x;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=b;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=p;
-						lstArr[i].objCode*=2;
-						lstArr[i].objCode+=e;
+						else if(argv[symFlag+1][0] == '@'){
+							n = 1, ii = 0;
+							strcpy(tmp,argv[symFlag+1]+1);
+						}
+						else{
+							n = 1, ii = 1;
+							strcpy(tmp,argv[symFlag+1]);
+						}
+						if(argc == 3+symFlag)
+							x = 1;
+						addrIdx = recurFindSymbol(tmp,symbolSet);
+						if(addrIdx == -1){
+							disp = atoi(tmp); // 숫자가 아닌경우 error check 해줘야 함
+						}
+						else{
+							int pcCounter = lstArr[addrIdx].locCount-(lstArr[i].locCount+3);
+							if(-2048<=pcCounter && pcCounter<=2047){
+								p = 1;
+								if(pcCounter<0){ // 2의 보수를 취해준다
+									pcCounter += 4096;
+									disp = pcCounter;
+								}
+								else
+									disp = pcCounter;
+							}
+							else{
+								b = 1;
+								disp = lstArr[addrIdx].locCount-lstArr[baseIdx].locCount;
+								if(0>disp || disp >4095)  // ERROR
+									disp = 0;
+							}
+
+						}
+					}
+					else{
+						n = 1, ii = 1;
+					}
+					if(e)
+						b = 0,p = 0;
+					lstArr[i].objCode=op1;
+					lstArr[i].objCode*=4;
+					lstArr[i].objCode+=op2;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=n;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=ii;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=x;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=b;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=p;
+					lstArr[i].objCode*=2;
+					lstArr[i].objCode+=e;
+					if(e == 0){
 						lstArr[i].objCode*=4096;
 						lstArr[i].objCode+=disp;	
 						lstArr[i].objStr[0] = '6';
-						break;
-					case 4:
+					}
+					else{
+						if(addrIdx != -1)
+							disp = lstArr[addrIdx].locCount;
+						lstArr[i].objCode*=1048576;
+						lstArr[i].objCode+=disp;	
 						lstArr[i].objStr[0] = '8';
-						break;
+					}
 				}
 			}
 		}
