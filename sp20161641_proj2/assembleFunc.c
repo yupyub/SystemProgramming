@@ -191,8 +191,10 @@ void makeListing(FILE *fp){ // listing file을 만든다
 	int op1,op2;
 	int n,ii,x,b,p,e;
 	int disp,addr;
+	int addrIdx;
 	for(int i = 0;i<lstArrSize;i++){
 		op1 = op2 = n = ii = x = b = p = e = disp = addr = 0;
+
 		if(lstArr[i].objCode != -1){
 			strcpy(str,lstArr[i].str);
 			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
@@ -257,8 +259,52 @@ void makeListing(FILE *fp){ // listing file을 만든다
 						lstArr[i].objCode+=retRegister(argv[symFlag+2]);
 						break;
 					case 3:
+						if(argc>1+symFlag){
+							if(argv[symFlag+1][0] == '#'){
+								n = 0, ii = 1;
+								strcpy(tmp,argv[symFlag+1]+1);
+							}
+							else if(argv[symFlag+1][0] == '@'){
+								n = 1, ii = 0;
+								strcpy(tmp,argv[symFlag+1]+1);
+							}
+							else{
+								n = 1, ii = 1;
+								strcpy(tmp,argv[symFlag+1]);
+							}
+							if(argc == 3+symFlag)
+								x = 1;
+							addrIdx = recurFindSymbol(tmp,symbolSet);
+							if(addrIdx == -1){
+								disp = atoi(tmp); // 숫자가 아닌경우 error check 해줘야 함
+							}
+							else{
+								
+
+							}
+						}
+						
+						lstArr[i].objCode=op1;
+						lstArr[i].objCode*=4;
+						lstArr[i].objCode+=op2;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=n;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=ii;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=x;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=b;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=p;
+						lstArr[i].objCode*=2;
+						lstArr[i].objCode+=e;
+						lstArr[i].objCode*=4096;
+						lstArr[i].objCode+=disp;	
+						lstArr[i].objStr[0] = '6';
 						break;
 					case 4:
+						lstArr[i].objStr[0] = '8';
 						break;
 				}
 			}
@@ -275,8 +321,14 @@ void makeListing(FILE *fp){ // listing file을 만든다
 		else{
 			for(int j = (int)strlen(lstArr[i].str);j<30;j++)
 				fprintf(fp," ");	
-			if(lstArr[i].objCode != -2)
-				fprintf(fp,"%llX\n",lstArr[i].objCode);
+			if(lstArr[i].objCode != -2){
+				if(lstArr[i].objStr[0] == '6')
+					fprintf(fp,"%06llX\n",lstArr[i].objCode);
+				else if(lstArr[i].objStr[0] == '8')
+					fprintf(fp,"%08llX\n",lstArr[i].objCode);
+				else
+					fprintf(fp,"%llX\n",lstArr[i].objCode);
+			}
 			else
 				fprintf(fp,"%s\n",lstArr[i].objStr);
 		}
