@@ -27,6 +27,7 @@
 ////////
 // type 관련 에러
 #define FILE_DOESNT_EXIST (7)
+#define THIS_IS_DIRECTORY_ERROR (13)
 ////////
 ////////
 // assembler 관련 에러

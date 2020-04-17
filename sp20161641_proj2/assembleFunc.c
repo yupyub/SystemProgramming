@@ -416,8 +416,6 @@ void makeObjectFile(FILE *fp){ // object file을 만든다
 	fprintf(fp,"E%06X",lstArr[startFlag].locCount);
 }
 int writeOneLine(FILE* fp,int i,int lenMax){ // 1줄씩 적어준다, 다음 시작 index를 return
-	int length = 0;
-	int varFlag = 0;
 	char str[300] = {0,};
 	char tmp[10];
 	if(lstArr[i].locCount == -1) // 공백, 주석, BASE 선언부

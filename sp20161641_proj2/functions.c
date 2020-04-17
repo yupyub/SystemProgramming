@@ -31,12 +31,34 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case ASSEM_START_OPCODE_DOESNT_EXIST:
 			printf("ASSEMBLER CODE : START DOESN'T EXIST\n");
 			break;
+		case THIS_IS_DIRECTORY_ERROR:
+			printf("THIS IS DIRECTORY\n");
+			break;
 	}
 
 }
 int typeFile(int argc,char argv[100][100]){ // 입력받은 파일의 내용을 출력 (함수 포인터 11) 
 	if(argc != 2)
 		return INPUT_ERROR;
+	DIR* dir = NULL;
+	struct dirent* entry;
+	struct stat buf;
+	if((dir = opendir("./")) != NULL){
+		while((entry = readdir(dir)) != NULL){
+			lstat(entry->d_name,&buf);
+			if(strcmp(entry->d_name,argv[1]) == 0){
+				if(S_ISDIR(buf.st_mode))
+					return THIS_IS_DIRECTORY_ERROR;
+				else
+					break;
+			}
+		}
+		closedir(dir);
+	}
+	if(strcmp("./",argv[1]) == 0)
+		return THIS_IS_DIRECTORY_ERROR;
+	if(strcmp("../",argv[1]) == 0)
+		return THIS_IS_DIRECTORY_ERROR;
 	char str[1002];
 	int notEnter = 0;
 	FILE *fp = fopen(argv[1],"r");
