@@ -8,6 +8,7 @@ char programName[50];
 symbolNode* symbolSetPrev = NULL;
 symbolNode* symbolSet = NULL;
 int startFlag = -1,endFlag = -1;
+int endLoc = 0;
 void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
 	symbolSetPrev = symbolSet; // 이후free 추가
 	symbolSet = NULL;
@@ -16,7 +17,7 @@ void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
 		lstArr[i].str[0] = 0;
 		lstArr[i].objCode = 0;
 	}
-	lstArrSize = baseIdx = baseLine = mffMax = 0;
+	lstArrSize = baseIdx = baseLine = mffMax = endLoc = 0;
 	startFlag = endFlag = -1;
 }
 int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 object file과 listing file을 만든다
@@ -130,6 +131,7 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 		lstArrSize++;
 		locCount += locTemp;
 	}
+	endLoc = locCount;
 	if(endFlag == -1){
 		printf("LINE : (%d) :",lstArrSize-1);
 		return ASSEM_END_OPCODE_DOESNT_EXIST; 
@@ -402,13 +404,45 @@ void makeListingFile(FILE *fp){ // listing file을 만든다
 	}
 }
 void makeObjectFile(FILE *fp){ // object file을 만든다
-	int 
-	fprintf(fp,"H%-6s",programName,lstArr[startFlag].);
-	for(int i = startFlag+1;i<endFlag;i++){
-
+	int lenMax = 55;
+	int idx = startFlag;
+	fprintf(fp,"H%-6s%06X%06X\n",programName,lstArr[startFlag].locCount,endLoc);	
+	while(idx<endFlag){
+		idx = writeOneLine(idx,lenMax);
 	}
+	for(int i = 0;i<mffMax;i++){
+		fprintf(fp,"M%06X05\n",modFormFour[i]);
+	}
+	fprintf(fp,"E%06X",lstArr[startFlag].locCount);
+}
+int writeOneLine(int idx,int lenMax,{ // 1줄씩 적어준다, 다음 시작 index를 return
+	int length = 0;
+	int varFlag = 0;
+	for(int i = startFlag+1;i<endFlag;i++){
+		if(lstArr[i].locCount == -1) // 공백, 주석, BASE 선언부
+			continue;
+		if(lstArr[i].objCode == -1){ //변수
+			if(valFlag)
+				continue;
+			valFlag = 1;
+			fprintf(fp,"\n");
+		}
+		else if(lstArr[i].objCode == -2){ //string 으로 저장
 
-
+		}
+		else{
+			if(lstArr[i].objStr[0] == '6')
+				fprintf(fp,"%06llX\n",lstArr[i].objCode);
+			else if(lstArr[i].objStr[0] == '8')
+				fprintf(fp,"%08llX\n",lstArr[i].objCode);
+			else if(lstArr[i].objStr[0] == '4')
+				fprintf(fp,"%04llX\n",lstArr[i].objCode);
+			else if(lstArr[i].objStr[0] == '2')
+				fprintf(fp,"%02llX\n",lstArr[i].objCode);
+			else
+				fprintf(fp,"%llX\n",lstArr[i].objCode);
+		}
+	}
 }
 int printSymbol(int argv, char argc[100][100]){ // symbol table을 출력한다
 	if(argv != 1)

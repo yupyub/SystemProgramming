@@ -38,13 +38,20 @@ int typeFile(int argc,char argv[100][100]){ // 입력받은 파일의 내용을 
 	if(argc != 2)
 		return INPUT_ERROR;
 	char str[1002];
+	int notEnter = 0;
 	FILE *fp = fopen(argv[1],"r");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
 	while(fgets(str,1000,fp)!=NULL){
 		printf("%s",str);
+		if(strlen(str)>0 && str[strlen(str)-1] != '\n')
+			notEnter = 1;
+		else
+			notEnter = 0;
 	}
 	fclose(fp);
+	if(notEnter)
+		printf("\n");
 	return INPUT_NORMAL;
 }
 int inappropriateInput(int argc,char argv[100][100]){ // 적합하지 않은 명령어 처리 (함수 포인터 0)
