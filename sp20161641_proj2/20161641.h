@@ -75,6 +75,7 @@ int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolN
 void makeListingFile(FILE *fp); // listing file을 만든다
 int retRegister(char str[]); // string에 해당하는 register return
 void makeObjectFile(FILE *fp); // object file을 만든다
+int writeOneLine(FILE* fp,int i,int lenMax); // 1줄씩 적어준다, 다음 시작 index를 return
 int printSymbol(int argv, char argc[100][100]); // symbol table을 출력한다
 int recurFindSymbol(char str[],symbolNode *node); // 재귀적으로 symbol을 탐색
 void recurPrintSymbol(symbolNode *node); // 재귀적으로 하나씩 출력

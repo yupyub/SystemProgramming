@@ -404,45 +404,54 @@ void makeListingFile(FILE *fp){ // listing file을 만든다
 	}
 }
 void makeObjectFile(FILE *fp){ // object file을 만든다
-	int lenMax = 55;
+	int lenMax = 60; // lenMax < 256
 	int idx = startFlag;
 	fprintf(fp,"H%-6s%06X%06X\n",programName,lstArr[startFlag].locCount,endLoc);	
 	while(idx<endFlag){
-		idx = writeOneLine(idx,lenMax);
+		idx = writeOneLine(fp,idx,lenMax);
 	}
 	for(int i = 0;i<mffMax;i++){
 		fprintf(fp,"M%06X05\n",modFormFour[i]);
 	}
 	fprintf(fp,"E%06X",lstArr[startFlag].locCount);
 }
-int writeOneLine(int idx,int lenMax,{ // 1줄씩 적어준다, 다음 시작 index를 return
+int writeOneLine(FILE* fp,int i,int lenMax){ // 1줄씩 적어준다, 다음 시작 index를 return
 	int length = 0;
 	int varFlag = 0;
-	for(int i = startFlag+1;i<endFlag;i++){
+	char str[300] = {0,};
+	char tmp[10];
+	if(lstArr[i].locCount == -1) // 공백, 주석, BASE 선언부
+		return i+1;
+	if(lstArr[i].objCode == -1) //변수
+		return i+1;
+	fprintf(fp,"T%06X",lstArr[i].locCount);
+	for(;i<endFlag;i++){
 		if(lstArr[i].locCount == -1) // 공백, 주석, BASE 선언부
 			continue;
-		if(lstArr[i].objCode == -1){ //변수
-			if(valFlag)
-				continue;
-			valFlag = 1;
-			fprintf(fp,"\n");
-		}
-		else if(lstArr[i].objCode == -2){ //string 으로 저장
-
-		}
+		if(lstArr[i].objCode == -1) //변수
+			break;
+		else if(lstArr[i].objCode == -2) //string 으로 저장
+			strcpy(tmp,lstArr[i].objStr);
 		else{
 			if(lstArr[i].objStr[0] == '6')
-				fprintf(fp,"%06llX\n",lstArr[i].objCode);
+				sprintf(tmp,"%06llX",lstArr[i].objCode);
 			else if(lstArr[i].objStr[0] == '8')
-				fprintf(fp,"%08llX\n",lstArr[i].objCode);
+				sprintf(tmp,"%08llX",lstArr[i].objCode);
 			else if(lstArr[i].objStr[0] == '4')
-				fprintf(fp,"%04llX\n",lstArr[i].objCode);
+				sprintf(tmp,"%04llX",lstArr[i].objCode);
 			else if(lstArr[i].objStr[0] == '2')
-				fprintf(fp,"%02llX\n",lstArr[i].objCode);
+				sprintf(tmp,"%02llX",lstArr[i].objCode);
 			else
-				fprintf(fp,"%llX\n",lstArr[i].objCode);
+				sprintf(tmp,"%llX",lstArr[i].objCode);
 		}
+		if(strlen(str)+strlen(tmp)>lenMax){
+			i--;
+			break;
+		}
+		strcat(str,tmp);
 	}
+	fprintf(fp,"%02X%s\n",(int)strlen(str)/2,str);
+	return i+1;
 }
 int printSymbol(int argv, char argc[100][100]){ // symbol table을 출력한다
 	if(argv != 1)
