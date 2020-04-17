@@ -33,6 +33,8 @@
 #define ASSEM_OPCODE_ERROR (8)
 #define ASSEM_SYMBOL_DUPLICATION_ERROR (9)
 #define ASSEM_BASE_NAME_ERROR (10)
+#define ASSEM_END_OPCODE_DOESNT_EXIST (11)
+#define ASSEM_START_OPCODE_DOESNT_EXIST (12)
 ////////
 typedef struct _instructionNode{
 	char str[100];
@@ -67,11 +69,12 @@ typedef struct _symbolNode{
 void initAssemble(); // lstNode 배열과 Symbol 리스트를 초기화 한다
 int assembleFile(int argv, char argc[100][100]); // 입력받은 파일의 object file과 listing file을 만든다
 int makeLocationCount(FILE *fp); // location count를 할당하고, symbol table을 만든다
+int makeObjCode(); // ObjCode를 만든다
 int retLocCount(int argc,char argv[100][100],int symFlag); // 각 operation이 얼만큼의 크기를 갖는지 return한다
 int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolNode** sPrev); // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
-void makeListing(FILE *fp); // listing file을 만든다
+void makeListingFile(FILE *fp); // listing file을 만든다
 int retRegister(char str[]); // string에 해당하는 register return
-void makeObject(FILE *fp); // object file을 만든다
+void makeObjectFile(FILE *fp); // object file을 만든다
 int printSymbol(int argv, char argc[100][100]); // symbol table을 출력한다
 int recurFindSymbol(char str[],symbolNode *node); // 재귀적으로 symbol을 탐색
 void recurPrintSymbol(symbolNode *node); // 재귀적으로 하나씩 출력

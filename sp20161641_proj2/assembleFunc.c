@@ -1,16 +1,20 @@
 #include "20161641.h"
 lstNode lstArr[1000];
+int modFormFour[100];
+int mffMax = 0;
 int lstArrSize = 0, baseIdx = 0, baseLine = 0;
 char baseName[50];
+symbolNode* symbolSetPrev = NULL;
 symbolNode* symbolSet = NULL;
 void initAssemble(){ // lstNode 배열과 Symbol 리스트를 초기화 한다
-	symbolSet = NULL; // 이후free 추가
+	symbolSetPrev = symbolSet; // 이후free 추가
+	symbolSet = NULL;
 	for(int i = 0;i<lstArrSize;i++){
 		lstArr[i].locCount = 0;
 		lstArr[i].str[0] = 0;
 		lstArr[i].objCode = 0;
 	}
-	lstArrSize = baseIdx = baseLine = 0;
+	lstArrSize = baseIdx = baseLine = mffMax = 0;
 }
 int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 object file과 listing file을 만든다
 	if(argv != 2)
@@ -21,8 +25,15 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 		return FILE_DOESNT_EXIST;
 	int err = makeLocationCount(fp);
 	fclose(fp);
-	if(err != 0)
+	if(err != 0){
+		symbolSet = symbolSetPrev;
 		return err;
+	}
+	err = makeObjCode();
+	if(err != 0){
+		symbolSet = symbolSetPrev;
+		return err;
+	}
 	/////////////////////////////////////////
 	char fileName1[100],fileName2[100];
 	int i = 0;
@@ -37,13 +48,13 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	fp = fopen(fileName1,"w");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
-	makeListing(fp);
+	makeListingFile(fp);
 	fclose(fp);
 	///////////////////////////////////////
 	fp = fopen(fileName2,"w");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
-	makeObject(fp);
+	makeObjectFile(fp);
 	fclose(fp);
 	return INPUT_NORMAL;
 }
@@ -53,30 +64,44 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 	char argv[100][100];
 	int locCount = 0,locTemp = 0;
 	int symFlag = 0;
+	int startFlag = 0,endFlag = 0;
 	while(fgets(str,100,fp)!=NULL){
-		str[strlen(str)-1] = '\0';
+		if(strlen(str)>0)
+			str[strlen(str)-1] = '\0';
 		strcpy(lstArr[lstArrSize].str,str);
 		if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
 		else symFlag = 0;
-		if(str[0] == '.'){ // Comment
+		parser(str,&argc,argv,", \f\n\r\t\v");
+		if(argc == 0){
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
 			lstArrSize++;
 			continue;
 		}
-		parser(str,&argc,argv,", \f\n\r\t\v");
+		if(argv[0][0] == '.'){
+			lstArr[lstArrSize].locCount = -1;
+			lstArr[lstArrSize].objCode = -1;
+			lstArrSize++;
+			continue;
+		}
 		if(strcmp("START",argv[symFlag]) == 0){
-			locCount = atoi(argv[symFlag+1]);
+			startFlag = 1;
+			locCount = strtol(argv[symFlag+1],NULL,16);
 			locTemp = locCount;
 			lstArr[lstArrSize].locCount = locCount;
 			lstArr[lstArrSize].objCode = -1;
 			lstArrSize++;
 			continue;
 		}
+		if(startFlag == 0){
+			printf("LINE : (%d) :",lstArrSize);
+			return ASSEM_START_OPCODE_DOESNT_EXIST; 
+		}
 		if(strcmp("END",argv[symFlag]) == 0){
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
 			lstArrSize++;
+			endFlag = 1;
 			break;
 		}
 		if(strcmp("BASE",argv[symFlag]) == 0){
@@ -95,11 +120,16 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 		lstArr[lstArrSize].locCount = locCount;
 		lstArr[lstArrSize].objCode = 0;	
 		if(symFlag&&!storeSymbol(argv[0],locCount,lstArrSize,&symbolSet,&symbolSet)){
+			printf("[%s],",argv[0]);
 			printf("LINE : (%d) :",lstArrSize);
 			return ASSEM_SYMBOL_DUPLICATION_ERROR;
 		}
 		lstArrSize++;
 		locCount += locTemp;
+	}
+	if(endFlag == 0){
+		printf("LINE : (%d) :",lstArrSize-1);
+		return ASSEM_END_OPCODE_DOESNT_EXIST; 
 	}
 	baseIdx = recurFindSymbol(baseName,symbolSet);
 	if(baseIdx == -1){
@@ -184,7 +214,7 @@ int retRegister(char str[]){ // string에 해당하는 register return
 	else
 		return 0;
 }
-void makeListing(FILE *fp){ // listing file을 만든다
+int makeObjCode(){ // ObjCode를 만든다
 	int argc = 0,symFlag = 0;
 	char argv[100][100];
 	char str[100],tmp[100];
@@ -322,8 +352,10 @@ void makeListing(FILE *fp){ // listing file을 만든다
 						lstArr[i].objStr[0] = '6';
 					}
 					else{
-						if(addrIdx != -1)
+						if(addrIdx != -1){
 							disp = lstArr[addrIdx].locCount;
+							modFormFour[mffMax++] = lstArr[i].locCount+1;		
+						}
 						lstArr[i].objCode*=1048576;
 						lstArr[i].objCode+=disp;	
 						lstArr[i].objStr[0] = '8';
@@ -331,7 +363,11 @@ void makeListing(FILE *fp){ // listing file을 만든다
 				}
 			}
 		}
-		///////////////////////////////////////////// 출력
+	}
+	return 0;
+}
+void makeListingFile(FILE *fp){ // listing file을 만든다
+	for(int i = 0;i<lstArrSize;i++){
 		fprintf(fp,"%-7d ",i*5+5);
 		if(lstArr[i].locCount == -1)
 			fprintf(fp,"    ");
@@ -357,7 +393,7 @@ void makeListing(FILE *fp){ // listing file을 만든다
 	}
 }
 
-void makeObject(FILE *fp){ // object file을 만든다
+void makeObjectFile(FILE *fp){ // object file을 만든다
 
 }
 int printSymbol(int argv, char argc[100][100]){ // symbol table을 출력한다

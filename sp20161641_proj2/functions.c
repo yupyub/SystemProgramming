@@ -25,6 +25,12 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case ASSEM_BASE_NAME_ERROR:
 			printf("ASSEMBLER CODE : WRONG BASE NAME\n");
 			break;
+		case ASSEM_END_OPCODE_DOESNT_EXIST:
+			printf("ASSEMBLER CODE : END DOESN'T EXIST\n");
+			break;
+		case ASSEM_START_OPCODE_DOESNT_EXIST:
+			printf("ASSEMBLER CODE : START DOESN'T EXIST\n");
+			break;
 	}
 
 }
