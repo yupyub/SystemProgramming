@@ -41,6 +41,7 @@
 #define ASSEM_ADDRESS_OUT_OF_RANGE (16)
 #define ASSEM_INPUT_NORMAL (17) // assemble 의 경우만 예외처리 필요
 #define ASSEM_NUMBER_OUT_OF_RANGE (18)
+#define ASSEM_BYTE_WRONG_OPERAND (19)
 ////////
 typedef struct _instructionNode{
 	char str[100];

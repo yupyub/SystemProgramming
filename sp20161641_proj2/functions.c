@@ -48,6 +48,9 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case ASSEM_NUMBER_OUT_OF_RANGE:
 			printf("ASSEMBLER CODE : NUMBER OUT OF RANGE\n");
 			break;
+		case ASSEM_BYTE_WRONG_OPERAND:
+			printf("ASSEMBLER CODE : WRONG BYTE OPERAND\n");
+			break;
 	}
 
 }
@@ -61,7 +64,7 @@ int typeFile(int argc,char argv[100][100]){ // 입력받은 파일의 내용을 
 		while((entry = readdir(dir)) != NULL){
 			lstat(entry->d_name,&buf);
 			if(strcmp(entry->d_name,argv[1]) == 0){
-				if(S_ISDIR(buf.st_mode))
+				if(S_ISDIR(buf.st_mode)) // if it is diectory
 					return THIS_IS_DIRECTORY_ERROR;
 				else
 					break;
@@ -78,7 +81,7 @@ int typeFile(int argc,char argv[100][100]){ // 입력받은 파일의 내용을 
 	FILE *fp = fopen(argv[1],"r");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
-	while(fgets(str,1000,fp)!=NULL){
+	while(fgets(str,1000,fp)!=NULL){ // read line by line
 		printf("%s",str);
 		if(strlen(str)>0 && str[strlen(str)-1] != '\n')
 			notEnter = 1;
@@ -86,7 +89,7 @@ int typeFile(int argc,char argv[100][100]){ // 입력받은 파일의 내용을 
 			notEnter = 0;
 	}
 	fclose(fp);
-	if(notEnter)
+	if(notEnter) // if file don't ends woth enter 
 		printf("\n");
 	return INPUT_NORMAL;
 }

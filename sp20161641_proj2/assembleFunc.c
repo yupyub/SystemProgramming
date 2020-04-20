@@ -31,13 +31,13 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	strcpy(tmp,"assemble ");
 	strcat(tmp,argc[1]);
 	storeHistory(tmp); // assemble에 실패하더라도 명령어는 정강적으로 받았음으로 저장해야함
-	int err = makeLocationCount(fp);
+	int err = makeLocationCount(fp); // Location Count 생성
 	fclose(fp);
 	if(err != 0){
 		symbolSet = symbolSetPrev;
 		return err;
 	}
-	err = makeObjCode();
+	err = makeObjCode(); // Object Code 생성
 	if(err != 0){
 		symbolSet = symbolSetPrev;
 		return err;
@@ -54,11 +54,11 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	strcat(fileName2,".obj");
 	////////////////////////////////////////
 	fp = fopen(fileName1,"w");
-	makeListingFile(fp);
+	makeListingFile(fp); // .lst file 생성
 	fclose(fp);
 	///////////////////////////////////////
 	fp = fopen(fileName2,"w");
-	makeObjectFile(fp);
+	makeObjectFile(fp); // .obj file 생성
 	fclose(fp);
 	printf("%c[1;32m",27);	// assemble을 성공한 경우 초록색으로 출력 (추가구현)
 	printf("Successfully");
@@ -85,13 +85,13 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			lstArrSize++;
 			continue;
 		}
-		if(argv[0][0] == '.'){
+		if(argv[0][0] == '.'){ // Comment
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
 			lstArrSize++;
 			continue;
 		}
-		if(strcmp("START",argv[symFlag]) == 0){
+		if(strcmp("START",argv[symFlag]) == 0){ // Start location setting
 			startFlag = lstArrSize;
 			strcpy(programName,argv[0]);
 			locCount = strtol(argv[symFlag+1],NULL,16);
@@ -101,18 +101,18 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			lstArrSize++;
 			continue;
 		}
-		if(startFlag == -1){
+		if(startFlag == -1){ // if START doesn't exist
 			printf("LINE : (%d) :",lstArrSize*5+5);
 			return ASSEM_START_OPCODE_DOESNT_EXIST; 
 		}
-		if(strcmp("END",argv[symFlag]) == 0){
+		if(strcmp("END",argv[symFlag]) == 0){ // end the file reading
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
 			lstArrSize++;
 			endFlag = lstArrSize;
 			break;
 		}
-		if(strcmp("BASE",argv[symFlag]) == 0){
+		if(strcmp("BASE",argv[symFlag]) == 0){ // set BASE address
 			lstArr[lstArrSize].locCount = -1;
 			lstArr[lstArrSize].objCode = -1;
 			baseLine = lstArrSize;
@@ -122,14 +122,13 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 			continue;
 		}
 		locTemp = retLocCount(argc,argv,symFlag);
-		if(locTemp == -1){ 				// ERROR CASE
+		if(locTemp == -1){ 				// OPCODE ERROR CASE
 			printf("LINE : (%d) :",lstArrSize*5+5);
 			return ASSEM_OPCODE_ERROR;
 		}
 		lstArr[lstArrSize].locCount = locCount;
 		lstArr[lstArrSize].objCode = 0;	
-		if(symFlag&&!storeSymbol(argv[0],locCount,lstArrSize,&symbolSet,&symbolSet)){
-			printf("[%s],",argv[0]);
+		if(symFlag&&!storeSymbol(argv[0],locCount,lstArrSize,&symbolSet,&symbolSet)){ // Duplicated symbol
 			printf("LINE : (%d) :",lstArrSize*5+5);
 			return ASSEM_SYMBOL_DUPLICATION_ERROR;
 		}
@@ -137,18 +136,18 @@ int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table
 		locCount += locTemp;
 	}
 	endLoc = locCount;
-	if(endFlag == -1){
+	if(endFlag == -1){ // if END doesn't exist
 		printf("LINE : (%d) :",lstArrSize*5);
 		return ASSEM_END_OPCODE_DOESNT_EXIST; 
 	}
-	if(baseIdx == -1){
+	if(baseIdx == -1){ // base operend name error
 		baseIdx = recurFindSymbol(baseName,symbolSet);
-		if(baseIdx == -1){
+		if(baseIdx == -1){  // base operend name error
 			printf("LINE : (%d) :",baseLine*5+5);
 			return ASSEM_BASE_NAME_ERROR;
 		}
 	}
-	else{
+	else{ // base doesn't decleared warning
 		printf("WARNING : BASE DOESN'T DECLEARED\n");
 		baseIdx = -1;
 	}
@@ -170,7 +169,7 @@ int retLocCount(int argc,char argv[100][100],int symFlag){ // 각 operation이 �
 	}
 	int plusFlag = 0;
 	char str[100];
-	if(argv[symFlag][0] == '+'){
+	if(argv[symFlag][0] == '+'){ // EXTENDED MODE
 		plusFlag = 1;
 		strcpy(str,argv[symFlag]+1);
 	}
@@ -182,7 +181,7 @@ int retLocCount(int argc,char argv[100][100],int symFlag){ // 각 operation이 �
 	return opTemp->val[plusFlag];
 }
 int storeSymbol(char str[], int locCount, int arrIdx, symbolNode** sNow, symbolNode** sPrev){ // 재귀적으로 정렬을 유지하면서 symbol을 저장한다
-	if((*sNow) != NULL){
+	if((*sNow) != NULL){ // For string sorting
 		int cmp = strcmp((*sNow)->str,str);
 		if(cmp == 0) return 0;
 		else if(cmp < 0) {
@@ -243,10 +242,10 @@ int makeObjCode(){ // ObjCode를 만든다
 		op1 = op2 = n = ii = x = b = p = e = disp = addr = 0;
 		if(lstArr[i].objCode != -1){
 			strcpy(str,lstArr[i].str);
-			if(str[0] != ' ' && str[0] != '\t') symFlag = 1;
+			if(str[0] != ' ' && str[0] != '\t') symFlag = 1; // check the symbol
 			else symFlag = 0;
 			parser(str,&argc,argv,", \f\n\r\t\v");
-			for(int i = argc;i<100;i++)
+			for(int i = argc;i<100;i++) // Initialization
 				argv[i][0] = 0;
 			if(strcmp("WORD",argv[symFlag]) == 0){
 				lstArr[i].objCode = (long long)atoi(argv[symFlag+1]);
@@ -276,10 +275,13 @@ int makeObjCode(){ // ObjCode를 만든다
 					lstArr[i].objCode = -2;
 					strcpy(lstArr[i].objStr,tmp);
 				}
-				// else // error case
+				else{ // wrong byte operand
+					printf("LINE : (%d) :",i*5+5);
+					return ASSEM_BYTE_WRONG_OPERAND;
+				}
 			}
 			else{
-				if(argv[symFlag][0] == '+'){
+				if(argv[symFlag][0] == '+'){ // extended mode
 					e = 1;
 					strcpy(tmp,argv[symFlag]+1);
 				}
@@ -290,43 +292,42 @@ int makeObjCode(){ // ObjCode를 만든다
 				op1 = op2/16;
 				op2 %= 16;
 				op2 /= 4;
-				if(opTemp->val[e] == 1){
+				if(opTemp->val[e] == 1){ // format 1
 					lstArr[i].objCode = opTemp->opcode;
 					lstArr[i].objStr[0] = '2';
 				}
-				else if(opTemp->val[e] == 2){
+				else if(opTemp->val[e] == 2){ // format 2
 					op2*=4;
 					lstArr[i].objCode=op1;
 					lstArr[i].objCode*=16;
 					lstArr[i].objCode+=op2;
 					lstArr[i].objCode*=16;
 					x = retRegister(argv[symFlag+1]);
-					if(x == -1){
+					if(x == -1){ // wrong register name
 						printf("LINE : (%d) :",i*5+5);
 						return ASSEM_WRONG_REGISTER;
 					}
 					lstArr[i].objCode+=x;
 					lstArr[i].objCode*=16;
-
 					x = retRegister(argv[symFlag+2]);
-					if(x == -1){ 
+					if(x == -1){ // wrong register name
 						printf("LINE : (%d) :",i*5+5);
 						return ASSEM_WRONG_REGISTER;
 					}
 					lstArr[i].objCode+=x;
 					lstArr[i].objStr[0] = '4';
 				}
-				else if(opTemp->val[e] == 3 || opTemp->val[e] == 4){
+				else if(opTemp->val[e] == 3 || opTemp->val[e] == 4){ // format 3 or 4
 					if(argc>1+symFlag){
-						if(argv[symFlag+1][0] == '#'){
+						if(argv[symFlag+1][0] == '#'){ // immidiate addressing
 							n = 0, ii = 1;
-							strcpy(tmp,argv[symFlag+1]+1);
+							strcpy(tmp,argv[symFlag+1]+1); 
 						}
-						else if(argv[symFlag+1][0] == '@'){
+						else if(argv[symFlag+1][0] == '@'){ // indirect addressing
 							n = 1, ii = 0;
 							strcpy(tmp,argv[symFlag+1]+1);
 						}
-						else{
+						else{ // simple addressing
 							n = 1, ii = 1;
 							strcpy(tmp,argv[symFlag+1]);
 						}
@@ -335,37 +336,37 @@ int makeObjCode(){ // ObjCode를 만든다
 						addrIdx = recurFindSymbol(tmp,symbolSet);
 						if(addrIdx == -1){
 							disp = atoi(tmp);
-							if(disp == 0 && tmp[0] != '0'){
+							if(disp == 0 && tmp[0] != '0'){ // symbol doesn't exist
 								printf("LINE : (%d) :",i*5+5);
 								return ASSEM_SYMBOL_DOESNT_EXIST;
 							}
-							if(disp>4095 && e == 0){
+							if(disp>4095 && e == 0){ // number out of range (format 3)
 								printf("LINE : (%d) :",i*5+5);
 								return ASSEM_NUMBER_OUT_OF_RANGE;
 							}
-							if(disp>=(1<<20) && e == 1){
+							if(disp>=(1<<20) && e == 1){ // number out of range (format 4)
 								printf("LINE : (%d) :",i*5+5);
 								return ASSEM_NUMBER_OUT_OF_RANGE;
 							}
 						}
 						else if(e == 0){
 							int pcCounter = lstArr[addrIdx].locCount-(lstArr[i].locCount+3);
-							if(-2048<=pcCounter && pcCounter<=2047){
+							if(-2048<=pcCounter && pcCounter<=2047){ // pc relative
 								p = 1;
-								if(pcCounter<0){ // 2의 보수를 취해준다
+								if(pcCounter<0){ // 2's complement
 									pcCounter += 4096;
 									disp = pcCounter;
 								}
 								else
 									disp = pcCounter;
 							}
-							else{
+							else{ // base relative
 								b = 1;
 								if(baseIdx!=-1)
 									disp = lstArr[addrIdx].locCount-lstArr[baseIdx].locCount;
 								else 
 									disp = -1;
-								if(0>disp || disp >4095){ 
+								if(0>disp || disp >4095){ // address out of range
 									printf("LINE : (%d) :",i*5+5);
 									return ASSEM_ADDRESS_OUT_OF_RANGE;
 								}
@@ -378,6 +379,7 @@ int makeObjCode(){ // ObjCode를 만든다
 					}
 					if(e)
 						b = 0,p = 0;
+					// calculate object code
 					lstArr[i].objCode=op1;
 					lstArr[i].objCode*=4;
 					lstArr[i].objCode+=op2;
@@ -482,7 +484,7 @@ int writeOneLine(FILE* fp,int i,int lenMax){ // 1줄씩 적어준다, 다음 시
 			else
 				sprintf(tmp,"%llX",lstArr[i].objCode);
 		}
-		if(strlen(str)+strlen(tmp)>lenMax){
+		if(strlen(str)+strlen(tmp)>lenMax){ // exceed linemax
 			i--;
 			break;
 		}
