@@ -41,12 +41,13 @@
 205           .
 210     205D  WRREC  CLEAR  X               B410
 215     205F         LDT    LENGTH          774000
-220     2062  WLOOP  TD     OUTPUT          E32011
+220     2062  WLOOP  TD     OUTPUT          E32012
 225     2065         JEQ    WLOOP           332FFA
 230     2068         LDCH   BUFFER, X       53C003
-235     206B         WD     OUTPUT          DF2008
+235     206B         WD     OUTPUT          DF2009
 240     206E         TIXR   T               B850
 245     2070         JLT    WLOOP           3B2FEF
-250     2073         RSUB                   4F0000
-255     2076  OUTPUT BYTE   X'05'           05
-260                  END    FIRST
+250     2073         HIO                    F4
+255     2074         RSUB                   4F0000
+260     2077  OUTPUT BYTE   X'05'           05
+265                  END    FIRST

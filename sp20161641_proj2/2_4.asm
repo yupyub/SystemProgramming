@@ -47,6 +47,7 @@ WLOOP  TD     OUTPUT
        WD     OUTPUT
        TIXR   T
        JLT    WLOOP
+       HIO
        RSUB
 OUTPUT BYTE   X'05'
        END    FIRST

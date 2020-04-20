@@ -36,6 +36,11 @@
 #define ASSEM_BASE_NAME_ERROR (10)
 #define ASSEM_END_OPCODE_DOESNT_EXIST (11)
 #define ASSEM_START_OPCODE_DOESNT_EXIST (12)
+#define ASSEM_WRONG_REGISTER (14)
+#define ASSEM_SYMBOL_DOESNT_EXIST (15)
+#define ASSEM_ADDRESS_OUT_OF_RANGE (16)
+#define ASSEM_INPUT_NORMAL (17) // assemble 의 경우만 예외처리 필요
+#define ASSEM_NUMBER_OUT_OF_RANGE (18)
 ////////
 typedef struct _instructionNode{
 	char str[100];
@@ -58,13 +63,13 @@ typedef struct _lstNode{
 	char str[50];
 	long long objCode;
 	char objStr[10];
-}lstNode;
+}lstNode; // asm 코드의 정보를 저장하는 노드
 typedef struct _symbolNode{
 	int locCount;
 	int arrIdx;
 	char str[50];
 	struct _symbolNode* link;
-}symbolNode;
+}symbolNode; // symbol을 저장하는 노드
 ////////
 // functions in assembleFunc.c
 void initAssemble(); // lstNode 배열과 Symbol 리스트를 초기화 한다

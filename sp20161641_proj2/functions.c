@@ -34,6 +34,20 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case THIS_IS_DIRECTORY_ERROR:
 			printf("THIS IS DIRECTORY\n");
 			break;
+		case ASSEM_WRONG_REGISTER:
+			printf("ASSEMBLER CODE : WRONG REGISTER NAME\n");
+			break;
+		case ASSEM_SYMBOL_DOESNT_EXIST:
+			printf("ASSEMBLER CODE : SYMBOL DOESN'T EXIST\n");
+			break;
+		case ASSEM_ADDRESS_OUT_OF_RANGE:
+			printf("ASSEMBLER CODE : ADDRESS OUT OF RANGE (Use format4)\n");
+			break;
+		case ASSEM_INPUT_NORMAL:
+			break;
+		case ASSEM_NUMBER_OUT_OF_RANGE:
+			printf("ASSEMBLER CODE : NUMBER OUT OF RANGE\n");
+			break;
 	}
 
 }
