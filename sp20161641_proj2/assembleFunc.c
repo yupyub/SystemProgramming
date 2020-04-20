@@ -27,10 +27,6 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	FILE *fp = fopen(argc[1],"r");
 	if(fp == NULL)
 		return FILE_DOESNT_EXIST;
-	char tmp[100];
-	strcpy(tmp,"assemble ");
-	strcat(tmp,argc[1]);
-	storeHistory(tmp); // assemble에 실패하더라도 명령어는 정강적으로 받았음으로 저장해야함
 	int err = makeLocationCount(fp); // Location Count 생성
 	fclose(fp);
 	if(err != 0){
@@ -42,7 +38,6 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 		symbolSet = symbolSetPrev;
 		return err;
 	}
-	/////////////////////////////////////////
 	char fileName1[100],fileName2[100];
 	int i = 0;
 	while(argc[1][i] != '.' && argc[1][i] != '\0'){
@@ -52,11 +47,9 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	fileName1[i] = fileName2[i] = '\0';
 	strcat(fileName1,".lst");
 	strcat(fileName2,".obj");
-	////////////////////////////////////////
 	fp = fopen(fileName1,"w");
 	makeListingFile(fp); // .lst file 생성
 	fclose(fp);
-	///////////////////////////////////////
 	fp = fopen(fileName2,"w");
 	makeObjectFile(fp); // .obj file 생성
 	fclose(fp);
@@ -64,7 +57,7 @@ int assembleFile(int argv, char argc[100][100]){ // 입력받은 파일의 objec
 	printf("Successfully");
 	printf("%c[0m",27);
 	printf(" %s.\n",argc[1]);
-	return ASSEM_INPUT_NORMAL;
+	return INPUT_NORMAL;
 }
 int makeLocationCount(FILE *fp){ // location count를 할당하고, symbol table을 만든다
 	char str[100];
