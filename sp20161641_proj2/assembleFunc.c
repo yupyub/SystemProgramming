@@ -157,7 +157,7 @@ int retLocCount(int argc,char argv[100][100],int symFlag){ // 각 operation이 �
 		if(argv[symFlag+1][0] == 'C')
 			return strlen(argv[symFlag+1])-3;		
 		else if(argv[symFlag+1][0] == 'X')
-			return 1;
+			return MAX(1,(strlen(argv[symFlag+1])-3)/2);
 		else return 0;
 	}
 	int plusFlag = 0;
@@ -242,6 +242,7 @@ int makeObjCode(){ // ObjCode를 만든다
 				argv[i][0] = 0;
 			if(strcmp("WORD",argv[symFlag]) == 0){
 				lstArr[i].objCode = (long long)atoi(argv[symFlag+1]);
+				lstArr[i].objStr[0] = '6';
 			}
 			else if(strcmp("RESW",argv[symFlag]) == 0){
 				lstArr[i].objCode = -1;		
