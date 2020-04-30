@@ -1,3 +1,7 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   General Setting
+" curl https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim > ~/.vim/colors/molokai.vim
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Sets history line
 set history=500
