@@ -77,6 +77,9 @@ int loader(int argc, char argv[100][100]); // .obj 파일을 읽어서 linking�
 ////////
 // functions in run.c
 int breakPoint(int argc, char argv[100][100]); // break point를 설정한다
+void printBp(); // 저장된 BreakPoint를 출력한다
+void initRegister(); // Initialize Registers
+void runOneInstruction(); // PC기준 1개의 명령어 실행
 int runProgram(int argc, char argv[100][100]); // memory에 load된 프로그램을 실행한다
 ////////
 // functions in assembleFunc.c
