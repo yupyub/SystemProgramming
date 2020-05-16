@@ -18,3 +18,7 @@ opcodelist 10
 type 11
 assemble 12
 symbol 13
+progaddr 14
+loader 15
+bp 16
+run 17

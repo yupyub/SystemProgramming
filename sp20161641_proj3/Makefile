@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall
 TARGET = 20161641.out
-OBJECTS = 20161641.o functions.o InstructionProcessing.o MemoryInstructions.o OpcodeTable.o assembleFunc.o
+OBJECTS = 20161641.o functions.o InstructionProcessing.o MemoryInstructions.o OpcodeTable.o assembleFunc.o loader.o run.o
 
 all : $(TARGET)
 

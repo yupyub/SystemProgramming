@@ -71,6 +71,14 @@ typedef struct _symbolNode{
 	struct _symbolNode* link;
 }symbolNode; // symbol을 저장하는 노드
 ////////
+// functions in loader.c
+int progaddr(int argc, char argv[100][100]); // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
+int loader(int argc, char argv[100][100]); // .obj 파일을 읽어서 linking작업을 수행후, memory에 저장한다
+////////
+// functions in run.c
+int breakPoint(int argc, char argv[100][100]); // break point를 설정한다
+int runProgram(int argc, char argv[100][100]); // memory에 load된 프로그램을 실행한다
+////////
 // functions in assembleFunc.c
 void initAssemble(); // lstNode 배열과 Symbol 리스트를 초기화 한다
 int assembleFile(int argv, char argc[100][100]); // 입력받은 파일의 object file과 listing file을 만든다

@@ -15,7 +15,11 @@ int (*functionPointer[20])(int,char[100][100])={\
 		opcodeList,\
 		typeFile,\
 		assembleFile,\
-		printSymbol}; // 명령어에 대응하는 함수들의 함수포인터를 저장하는 배열
+		printSymbol,\
+        progaddr,\
+        loader,\
+        breakPoint,\
+        runProgram}; // 명령어에 대응하는 함수들의 함수포인터를 저장하는 배열
 
 void instructionSetInit(){ // 명령어 종류를 읽어들여, 명령어 리스트를 만든다 
 	FILE *fp = fopen("operations.txt","r");
