@@ -112,6 +112,12 @@ int help(int argc,char argv[100][100]){ // 도움말 출력 (함수 포인터 1)
 	printf("assemble filename\n");
 	printf("type filename\n");
 	printf("symbol\n");
+    printf("progaddr [address]\n");
+    printf("loader [object filename1] [object filename2] [...]\n");
+    printf("bp\n");
+    printf("bp clear\n");
+    printf("bp [address]\n");
+    printf("run\n");
 	return INPUT_NORMAL;
 }
 int printDirectory(int argc, char argv[100][100]){ // 현재위치 디랙토리 파일 출력 (함수 포인터 2)
