@@ -1,5 +1,5 @@
 #include "20161641.h"
-extern int programAddress;
+extern int progaddr;
 int A, X, L, PC, B, S, T;
 int runSeq[1000]; // 프로그램의 실행 순서대로 locCount를 저장
 int visitSeq[1000]; // bp로 지정된 locCount를 Check
@@ -40,7 +40,7 @@ void printBp(){ // 저장된 BreakPoint를 출력한다
 
 }
 void initRegister(){ // Initialize Registers
-    PC = programAddress; // 프로그램의 시작주소로 초기화
+    PC = progaddr; // 프로그램의 시작주소로 초기화
     ////// L = programLength; // 프로그램의 길이로 초기화
     L = 0; // loader 만든 후 위의 것으로 변경 필요 !!!!!!!!!!!!!!!!!!!!
     //////

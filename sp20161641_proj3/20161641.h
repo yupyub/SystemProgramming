@@ -42,6 +42,11 @@
 #define ASSEM_NUMBER_OUT_OF_RANGE (17)
 #define ASSEM_BYTE_WRONG_OPERAND (18)
 ////////
+////////
+// loader 관련 에러
+#define DUPLICATED_EXTERNAL_SYMBOL (19)
+#define UNDEFINED_EXTERNAL_SYMBOL (20)
+////////
 typedef struct _instructionNode{
 	char str[100];
 	int caseNum;
@@ -71,8 +76,19 @@ typedef struct _symbolNode{
 	struct _symbolNode* link;
 }symbolNode; // symbol을 저장하는 노드
 ////////
+typedef struct _estabNode{
+    char name[10];
+    int addr;
+}estabNode;
+
+
+
 // functions in loader.c
-int progaddr(int argc, char argv[100][100]); // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
+int setProgaddr(int argc, char argv[100][100]); // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
+void initEstab(); // estab 초기화
+int storeEstab(int fn, char name[],int addr); // estab 저장 및 주소 반환
+int Pass1(FILE *fp[], int fileNumber); // Pass1 수행, ESTAB 생성
+int Pass2(FILE *fp[], int fileNumber); // Pass2 수행, Linking Loading 수행
 int loader(int argc, char argv[100][100]); // .obj 파일을 읽어서 linking작업을 수행후, memory에 저장한다
 ////////
 // functions in run.c

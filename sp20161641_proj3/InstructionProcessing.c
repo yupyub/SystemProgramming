@@ -16,7 +16,7 @@ int (*functionPointer[20])(int,char[100][100])={\
 		typeFile,\
 		assembleFile,\
 		printSymbol,\
-        progaddr,\
+        setProgaddr,\
         loader,\
         breakPoint,\
         runProgram}; // 명령어에 대응하는 함수들의 함수포인터를 저장하는 배열

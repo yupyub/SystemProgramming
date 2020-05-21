@@ -1,6 +1,6 @@
 #include "20161641.h"
 extern int (*functionPointer[20])(int,char[100][100]); // InstructionProcessing.c 에 선언됨
-extern int programAddress;
+extern int progaddr;
 int main(){
 	char input[100]; // 명령어를 읽어들일 char 배열 
 	int argc; // 파싱 후 분할된 인자들의 수
@@ -8,7 +8,7 @@ int main(){
 	char tmpHist[100]; // 파싱 과정에서 input배열이 변경됨으로 history 저장을 위해 기존 명령어 저장
 	instructionSetInit(); // instruction 들을 읽어들여 저장
 	makeOpcodeTable(); // opcode hash table을 만든다
-    programAddress = 0; // progaddr을 0x00으로 초기화
+    progaddr = 0; // progaddr을 0x00으로 초기화
 	while(1){
 		printf("sicsim> ");
 		fgets(input,100,stdin);

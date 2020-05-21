@@ -49,6 +49,12 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case ASSEM_BYTE_WRONG_OPERAND:
 			printf("ASSEMBLER CODE : WRONG BYTE OPERAND\n");
 			break;
+		case DUPLICATED_EXTERNAL_SYMBOL:
+			printf("DUPLICATED EXTERNAL SYMBOL IN OBJECT CODE\n");
+			break;
+		case UNDEFINED_EXTERNAL_SYMBOL:
+			printf("UNDEFINED EXTERNAL SYMBOL IN OBJECT CODE\n");
+			break;
 	}
 
 }
