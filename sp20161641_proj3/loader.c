@@ -20,17 +20,13 @@ void initEstab(){ // estab 초기화
         esMax[i] = 0;
     }
 }
-int storeEstab(int fn, char name[],int addr){ // estab 저장 및 주소 반환
+void storeEstab(int fn, char name[],int addr){ // estab 저장
     for(int i = 6;i>0;i--)
         if(name[i] == ' ' || name[i] == '\n')
             name[i] = '\0';
-    for(int i = 0;i<esMax[fn];i++)
-        if(strcmp(estab[fn][i].name,name) == 0) 
-            return i; // already exist
     estab[fn][esMax[fn]].addr = addr;
     strcpy(estab[fn][esMax[fn]].name,name);
     esMax[fn]++;
-    return -1;
 }
 int returnEstab(char name[], int fileNum){ // estab symbol에 해당하는 address 반환
     for(int i = 0;i<fileNum;i++)
@@ -51,8 +47,11 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
         strncpy(name, str+1,6);
         name[6] = '\0';
         cslth = strtol(str+13,NULL,16);
-        if(storeEstab(fpIdx,name,csaddr) != -1)
+        if(returnEstab(name,fileNumber) != -1){
+            printf("%s :: ",name);
             return DUPLICATED_EXTERNAL_SYMBOL;
+        }
+        storeEstab(fpIdx,name,csaddr);
         while(fgets(str,300,fp[fpIdx]) != NULL){
             if(str[0] != 'D')
                 continue;
@@ -61,8 +60,11 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
                 strncpy(addrStr,str+6+i,6);
                 name[6] = addrStr[6] = '\0';
                 addr=strtol(addrStr,NULL,16);
-                if(storeEstab(fpIdx,name,csaddr+addr) != -1)
+                if(returnEstab(name,fileNumber) != -1){
+                    printf("%s :: ",name);
                     return DUPLICATED_EXTERNAL_SYMBOL;
+                }
+                storeEstab(fpIdx,name,csaddr+addr);
             }
         }
         csaddr += cslth;
@@ -129,8 +131,10 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
                 temp[2] = '\0';
                 int refIdx = atoi(temp);
                 int refAddr = returnEstab(refDic[refIdx],fileNumber);
-                if(refAddr == -1) // 정의되지 않은 reference 값인 경우
+                if(refAddr == -1){ // 정의되지 않은 reference 값인 경우
+                    printf("%s :: ",refDic[refIdx]);
                     return UNDEFINED_EXTERNAL_SYMBOL;
+                }
                 if(str[9] == '+')
                     objValue += refAddr;
                 else if(str[9] == '-')
