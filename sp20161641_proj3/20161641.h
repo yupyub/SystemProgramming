@@ -87,6 +87,7 @@ typedef struct _estabNode{
 int setProgaddr(int argc, char argv[100][100]); // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
 void initEstab(); // estab 초기화
 int storeEstab(int fn, char name[],int addr); // estab 저장 및 주소 반환
+int returnEstab(char name[], int fileNum); // estab symbol에 해당하는 address 반환
 int Pass1(FILE *fp[], int fileNumber); // Pass1 수행, ESTAB 생성
 int Pass2(FILE *fp[], int fileNumber); // Pass2 수행, Linking Loading 수행
 int loader(int argc, char argv[100][100]); // .obj 파일을 읽어서 linking작업을 수행후, memory에 저장한다

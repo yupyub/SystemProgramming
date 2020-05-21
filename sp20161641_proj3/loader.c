@@ -1,4 +1,5 @@
 #include "20161641.h"
+extern unsigned char memory[65536][16];
 int progaddr;
 int execaddr;
 estabNode estab[5][100];
@@ -29,6 +30,13 @@ int storeEstab(int fn, char name[],int addr){ // estab 저장 및 주소 반환
     estab[fn][esMax[fn]].addr = addr;
     strcpy(estab[fn][esMax[fn]].name,name);
     esMax[fn]++;
+    return -1;
+}
+int returnEstab(char name[], int fileNum){ // estab symbol에 해당하는 address 반환
+    for(int i = 0;i<fileNum;i++)
+        for(int j = 0;j<esMax[i];j++)
+            if(strcmp(name,estab[i][j].name) == 0)
+                return estab[i][j].addr;
     return -1;
 }
 int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
@@ -65,22 +73,77 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
 }
 int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
     int csaddr = progaddr;
+    int cslth;
     int fpidx = 0;
     char str[300];
     char temp[10];
-    while(fpIdx<fileNumber){
-        fgets(str,300,fp[fpIdx]);
+    char refDic[100][10] = {0,};
+    while(fpidx<fileNumber){
+        fgets(str,300,fp[fpidx]);
         cslth = strtol(str+13,NULL,16);
         while(fgets(str,300,fp[fpidx]) != NULL){
             if(str[0] == 'R'){
-                        
+                int refIdx;
+                strcpy(refDic[1],estab[fpidx][0].name); // 01은 프로그램 자체를 가리킴
+                for(int i = 1;i<strlen(str)-1;i+=8){
+                    strncpy(temp,str+i,2);
+                    temp[2] = '\0';
+                    refIdx = atoi(temp);
+                    strncpy(temp,str+2+i,6);
+                    temp[6] = '\0';
+                    for(int j = 0;j<6;j++){
+                        if(temp[j] == ' ' || temp[j] == '\n')
+                            temp[j] = '\0';
+                    }
+                    strcpy(refDic[refIdx],temp);
+                }
             }
             else if(str[0] == 'T'){
-
-
+                char addrStr[7];
+                char lenStr[3];
+                strncpy(addrStr,str+1,6);
+                strncpy(lenStr,str+7,2);
+                addrStr[6] = lenStr[2] = '\0';
+                int Taddr = strtol(addrStr,NULL,16) + csaddr;
+                int Tlen = strtol(lenStr,NULL,16);
+                for(int i = 0;i<Tlen;i++){
+                    strncpy(temp,str+9+2*i,2);
+                    temp[2] = '\0';
+                    memory[Taddr/16][Taddr%16] = strtol(temp,NULL,16);
+                    Taddr++;
+                }
             }
             else if(str[0] == 'M'){
-
+                char addrStr[7];
+                strncpy(addrStr,str+1,6);
+                addrStr[6] = '\0';
+                int Maddr = strtol(addrStr,NULL,16) + csaddr;
+                for(int i = 0;i<3;i++)
+                    sprintf(temp+i*2,"%02X",memory[(Maddr+i)/16][(Maddr+i)%16]);
+                temp[6] = '\0';
+                int objValue;
+                objValue = strtol(temp,NULL,16);
+                if(!('0' <= temp[0] && temp[0] < '8')) // 음수인 경우 2의 보수
+                    objValue = -(0xFFFFFF - objValue +1);
+                strncpy(temp,str+10,2);
+                temp[2] = '\0';
+                int refIdx = atoi(temp);
+                int refAddr = returnEstab(refDic[refIdx],fileNumber);
+                if(refAddr == -1) // 정의되지 않은 reference 값인 경우
+                    return UNDEFINED_EXTERNAL_SYMBOL;
+                if(str[9] == '+')
+                    objValue += refAddr;
+                else if(str[9] == '-')
+                    objValue -= refAddr;
+                if(objValue < 0) // 음수인 경우 2의 보수
+                    objValue -= 0xFF000000;
+                sprintf(temp,"%06X",objValue);
+                char shortStr[3];
+                for(int i = 0;i<3;i++){
+                    strncpy(shortStr,temp+i*2,2);
+                    shortStr[2] = '\0';
+                    memory[(Maddr+i)/16][(Maddr+i)%16] = strtol(shortStr,NULL,16);
+                }
             }
         }
         if(str[0] == 'E'){
@@ -91,7 +154,7 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
             }
         }
         csaddr += cslth;
-        fpIdx++;
+        fpidx++;
     }
     return INPUT_NORMAL;
 }
@@ -109,6 +172,12 @@ int loader(int argc, char argv[100][100]){ // .obj 파일을 읽어서 linking/l
     int ret = Pass1(fp,fileNumber);
     if(ret != INPUT_NORMAL)
         return ret;
+    for(int i = 1;i<argc;i++){ // open the .obj files
+        fclose(fp[i-1]);
+        fp[i-1] = fopen(argv[i],"r");
+        if(fp[i-1] == NULL)
+            return FILE_DOESNT_EXIST; 
+    }
     ret = Pass2(fp,fileNumber);
     if(ret != INPUT_NORMAL)
         return ret;
