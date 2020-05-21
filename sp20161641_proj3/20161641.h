@@ -47,6 +47,10 @@
 #define DUPLICATED_EXTERNAL_SYMBOL (19)
 #define UNDEFINED_EXTERNAL_SYMBOL (20)
 ////////
+////////
+// loader 관련 에러
+#define BP_VALUE_OUT_OF_RANGE (21)
+////////
 typedef struct _instructionNode{
 	char str[100];
 	int caseNum;

@@ -4,6 +4,7 @@ int progaddr;
 int execaddr;
 estabNode estab[5][100];
 int progLen[5];
+int totalLen;
 int esMax[5];
 int setProgaddr(int argc, char argv[100][100]){ // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
     if(argc != 2)
@@ -115,7 +116,7 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
                     Taddr++;
                 }
             }
-            else if(str[0] == 'M'){
+            else if(str[0] == 'M'){ // modify 하는 길이가 05, 06인지 구분할 필요 X
                 char addrStr[7];
                 strncpy(addrStr,str+1,6);
                 addrStr[6] = '\0';
@@ -185,7 +186,7 @@ int loader(int argc, char argv[100][100]){ // .obj 파일을 읽어서 linking/l
     ret = Pass2(fp,fileNumber);
     if(ret != INPUT_NORMAL)
         return ret;
-    int totalLen = 0;
+    totalLen = 0;
     printf("control symbol address length\n");
     printf("section name\n");
     printf("--------------------------------\n");

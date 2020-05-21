@@ -55,6 +55,9 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case UNDEFINED_EXTERNAL_SYMBOL:
 			printf("UNDEFINED EXTERNAL SYMBOL IN OBJECT CODE\n");
 			break;
+		case BP_VALUE_OUT_OF_RANGE:
+			printf("BP VALUE OUT OF RANGE\n");
+			break;
 	}
 
 }
