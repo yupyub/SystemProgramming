@@ -1,5 +1,6 @@
 #include "20161641.h"
 int progaddr;
+int execaddr;
 estabNode estab[5][100];
 int progLen[5];
 int esMax[5];
@@ -39,8 +40,6 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
     char name[10];
     while(fpIdx<fileNumber){
         fgets(str,300,fp[fpIdx]);
-        if(str[0] != 'H') continue; // 시작이 H가 아닌 경우 예외처리   
-        if(str[0] == '\0') break; // 비어있는 파일의 경우 예외처리
         strncpy(name, str+1,6);
         name[6] = '\0';
         cslth = strtol(str+13,NULL,16);
@@ -65,7 +64,35 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
     return INPUT_NORMAL;
 }
 int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
+    int csaddr = progaddr;
+    int fpidx = 0;
+    char str[300];
+    char temp[10];
+    while(fpIdx<fileNumber){
+        fgets(str,300,fp[fpIdx]);
+        cslth = strtol(str+13,NULL,16);
+        while(fgets(str,300,fp[fpidx]) != NULL){
+            if(str[0] == 'R'){
+                        
+            }
+            else if(str[0] == 'T'){
 
+
+            }
+            else if(str[0] == 'M'){
+
+            }
+        }
+        if(str[0] == 'E'){
+            if(str[1] != '\n'){
+                strncpy(temp,str+1,6);
+                temp[6] = '\0';
+                execaddr = csaddr+strtol(temp,NULL,16);
+            }
+        }
+        csaddr += cslth;
+        fpIdx++;
+    }
     return INPUT_NORMAL;
 }
 int loader(int argc, char argv[100][100]){ // .obj 파일을 읽어서 linking/loading작업을 수행후, memory에 저장한다
