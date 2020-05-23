@@ -1,5 +1,6 @@
 #include "20161641.h"
 extern unsigned char memory[65536][16];
+extern int NewLoad; // 프로그램이 새롭게 Load되었는지 알려주는 Flag
 int progaddr;
 int execaddr;
 estabNode estab[5][100];
@@ -201,5 +202,6 @@ int loader(int argc, char argv[100][100]){ // .obj 파일을 읽어서 linking/l
     }
     printf("--------------------------------\n");
     printf("           total length %04X\n",totalLen);
+    NewLoad = 1;
     return INPUT_NORMAL;
 }
