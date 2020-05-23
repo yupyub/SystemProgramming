@@ -140,6 +140,7 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
             temp += memory[(addr+2)/16][(addr+2)%16];
             addr = temp;
         }
+        printf("(%X) ",addr);
         switch((opcode/4)*4){
             case 0x14: // STL
             store(addr,reg[L],3);
@@ -161,44 +162,44 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
                 reg[SW] = '<';
             else
                 reg[SW] = '>';
-
-
             break;
             case 0x30: // JEQ
-
+            if(reg[SW] == '=')
+                reg[PC] = addr;
             break;
             case 0x3C: // J
-
+            reg[PC] = addr;
             break;
             case 0x0C: // STA
-
+            store(addr,reg[A],3);
             break;
             case 0x74: // LDT
-
+            reg[T] = addr;
             break;
             case 0xE0: // TD
-
+            reg[SW] = '<';
             break;
             case 0xD8: // RD
-
+            reg[A] = 0;
             break;
             case 0x54: // STCH
-
+            store(addr,reg[A]%16,1);
             break;
             case 0x38: // JLT
-
+            if(reg[SW] == '<')
+                reg[PC] = addr;
             break;
             case 0x10: // STX
-
+            store(addr,reg[T],3);
             break;
             case 0x4C: // RSUB
-
+            reg[PC] = reg[L];
             break;
             case 0x50: // LDCH
-
+            reg[A] = (reg[A]&0xFFFFFF00) + (addr/0x10000);
             break;
             case 0xDC: // WD
-
+            //
             break;
         }
     }
@@ -207,7 +208,7 @@ void printRegisters(){
     printf("    A : %06X   X : %06X\n", reg[A], reg[X]);
     printf("    L : %06X  PC : %06X\n", reg[L], reg[PC]);
     printf("    B : %06X   S : %06X\n", reg[B], reg[S]);
-    printf("    T : %06X\n", T);
+    printf("    T : %06X\n", reg[T]);
 }
 int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램을 실행한다
     if(argc > 1)
@@ -221,6 +222,8 @@ int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램
     }
     while(reg[PC]<progaddr+totalLen){ // while문으로 runOneInstruction() 실행하면서
         runOneInstruction();
+        printf("%X -> ",reg[PC]);
+        scanf("%*c");
         for(int i = 0;i<bpMax;i++){
             if(reg[PC] == bp[i]){ // bp를 만나면 함수 종료
                 printRegisters();
