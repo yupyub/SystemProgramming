@@ -54,11 +54,19 @@ void store(int address,int value,int byte){
         memory[(address+i)/16][(address+i)%16] = strtol(shortStr,NULL,16);
     }
 }
+int returnValue(int addr,int byte){
+    int temp = memory[addr/16][addr%16];
+    for(int i = 1;i<byte;i++){
+        temp *= 16*16;
+        temp += memory[(addr+i)/16][(addr+i)%16];
+    }
+    return temp;
+}
 void runOneInstruction(){ // PC기준 1개의 명령어 실행
     int opcode = memory[reg[PC]/16][reg[PC]%16];
     int format = 0;
     switch(opcode/0x10){ //format별로 나누어주기
-        case 9:
+        case 0x9:
         case 0xA:
         case 0xB:
         format = 2;
@@ -106,15 +114,16 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
     }
     else{ // format 3 and 4
         int ni = opcode%4;
-        int addr = memory[(reg[PC]+1)/16][(reg[PC]+1)%16]%16;
+        int addr = memory[(reg[PC]+1)/16][(reg[PC]+1)%16];
         int xbpe = addr/16;
-        addr *= 16;
+        addr %= 16;
+        addr *= 16*16;
         addr += memory[(reg[PC]+2)/16][(reg[PC]+2)%16];
         if(format == 3 && (xbpe & (1<<1)) && addr>(1<<11)) // 2의 보수
             addr -= (1<<12);
         reg[PC] += 3;
         if(format == 4){
-            addr *=16;
+            addr *=16*16;
             addr += memory[reg[PC]/16][reg[PC]%16];
             reg[PC]++;
         }
@@ -124,38 +133,31 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
             addr += reg[B];
         if(xbpe & (1<<1))
             addr += reg[PC];
-        if(ni == 2 || ni == 3){ // simple and indirece addressing
-            int temp = memory[addr/16][addr%16];
-            temp *= 16;
-            temp += memory[(addr+1)/16][(addr+1)%16];
-            temp *= 16;
-            temp += memory[(addr+2)/16][(addr+2)%16];
-            addr = temp;
-        }
-        if(ni == 2){ // indirect addressing
-            int temp = memory[addr/16][addr%16];
-            temp *= 16;
-            temp += memory[(addr+1)/16][(addr+1)%16];
-            temp *= 16;
-            temp += memory[(addr+2)/16][(addr+2)%16];
-            addr = temp;
-        }
-        printf("(%X) ",addr);
+        if(ni == 2)
+            addr = returnValue(addr,3);
         switch((opcode/4)*4){
             case 0x14: // STL
             store(addr,reg[L],3);
             break;
             case 0x68: // LDB
-            reg[B] = addr;
+            if(ni == 1)
+                reg[B] = addr;
+            else
+                reg[B] = returnValue(addr,3);
             break;
-            case 0x48: //JSUB
+            case 0x48: // +JSUB
             reg[L] = reg[PC];
             reg[PC] = addr;
             break;
             case 0x00: // LDA
-            reg[A] = addr;
+            if(ni == 1)
+                reg[A] = addr;
+            else
+                reg[A] = returnValue(addr,3);
             break;
             case 0x28: // COMP
+            if(ni != 1)
+                addr = returnValue(addr,3);
             if(reg[A] == addr)
                 reg[SW] = '=';
             else if (reg[A]<addr)
@@ -174,6 +176,8 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
             store(addr,reg[A],3);
             break;
             case 0x74: // LDT
+            if(ni != 1)
+                addr = returnValue(addr,3);
             reg[T] = addr;
             break;
             case 0xE0: // TD
@@ -190,12 +194,14 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
                 reg[PC] = addr;
             break;
             case 0x10: // STX
-            store(addr,reg[T],3);
+            store(addr,reg[X],3);
             break;
             case 0x4C: // RSUB
             reg[PC] = reg[L];
             break;
             case 0x50: // LDCH
+            if(ni != 1)
+                addr = returnValue(addr,3);
             reg[A] = (reg[A]&0xFFFFFF00) + (addr/0x10000);
             break;
             case 0xDC: // WD
@@ -222,7 +228,7 @@ int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램
     }
     while(reg[PC]<progaddr+totalLen){ // while문으로 runOneInstruction() 실행하면서
         runOneInstruction();
-        printf("%X -> ",reg[PC]);
+        printRegisters();
         scanf("%*c");
         for(int i = 0;i<bpMax;i++){
             if(reg[PC] == bp[i]){ // bp를 만나면 함수 종료
