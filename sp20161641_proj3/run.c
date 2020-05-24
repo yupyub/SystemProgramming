@@ -63,7 +63,7 @@ int returnValue(int addr,int byte){ // 메모리에 저장된 byte 만큼의 값
     return temp;
 }
 void runOneInstruction(){ // PC기준 1개의 명령어 실행
-    // copy.obj 파일의 명령어만 구현되어있음 (ERROR 처리도 미구현)
+    // copy.obj 파일의 명령어만 구현되어있음 (ERROR 처리 미구현)
     int opcode = memory[reg[PC]/16][reg[PC]%16];
     int format = 0;
     switch(opcode/0x10){ //format별로 나누어주기
