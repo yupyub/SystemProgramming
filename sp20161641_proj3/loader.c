@@ -6,7 +6,7 @@ int execaddr;
 estabNode estab[5][100];
 int progLen[5];
 int totalLen;
-int esMax[5];
+int esMax[5]; // estab에 저장된 symbol의 개수
 int setProgaddr(int argc, char argv[100][100]){ // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
     if(argc != 2)
         return INPUT_ERROR;
@@ -53,7 +53,7 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
         strncpy(name, str+1,6);
         name[6] = '\0';
         cslth = strtol(str+13,NULL,16);
-        if(returnEstab(name,fileNumber) != -1){
+        if(returnEstab(name,fileNumber) != -1){ // symbol duplicated
             printf("%s :: ",name);
             return DUPLICATED_EXTERNAL_SYMBOL;
         }
@@ -66,7 +66,7 @@ int Pass1(FILE *fp[], int fileNumber){ // Pass1 수행, ESTAB 생성
                 strncpy(addrStr,str+6+i,6);
                 name[6] = addrStr[6] = '\0';
                 addr=strtol(addrStr,NULL,16);
-                if(returnEstab(name,fileNumber) != -1){
+                if(returnEstab(name,fileNumber) != -1){ // symbol duplicted
                     printf("%s :: ",name);
                     return DUPLICATED_EXTERNAL_SYMBOL;
                 }
@@ -90,7 +90,7 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
         fgets(str,300,fp[fpidx]);
         cslth = strtol(str+13,NULL,16);
         while(fgets(str,300,fp[fpidx]) != NULL){
-            if(str[0] == 'R'){
+            if(str[0] == 'R'){ // R record
                 int refIdx;
                 strcpy(refDic[1],estab[fpidx][0].name); // 01은 프로그램 자체를 가리킴
                 for(int i = 1;i<strlen(str)-1;i+=8){
@@ -106,7 +106,7 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
                     strcpy(refDic[refIdx],temp);
                 }
             }
-            else if(str[0] == 'T'){
+            else if(str[0] == 'T'){ // T record
                 char addrStr[7];
                 char lenStr[3];
                 strncpy(addrStr,str+1,6);
@@ -121,7 +121,8 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
                     Taddr++;
                 }
             }
-            else if(str[0] == 'M'){ // modify 하는 길이가 05, 06인지 구분할 필요 X
+            else if(str[0] == 'M'){ // M record
+                // modify 하는 길이가 05, 06인지 구분할 필요 X
                 char addrStr[7];
                 strncpy(addrStr,str+1,6);
                 addrStr[6] = '\0';
@@ -156,8 +157,8 @@ int Pass2(FILE *fp[], int fileNumber){ // Pass2 수행, Linking Loading 수행
                 }
             }
         }
-        if(str[0] == 'E'){
-            if(str[1] != '\n'){
+        if(str[0] == 'E'){ // E record
+            if(str[1] != '\n'){ // execaddr이 있는 경우
                 strncpy(temp,str+1,6);
                 temp[6] = '\0';
                 execaddr = csaddr+strtol(temp,NULL,16);
@@ -192,7 +193,7 @@ int loader(int argc, char argv[100][100]){ // .obj 파일을 읽어서 linking/l
     if(ret != INPUT_NORMAL)
         return ret;
     totalLen = 0;
-    printf("control symbol address length\n");
+    printf("control symbol address length\n"); // 출력
     printf("section name\n");
     printf("--------------------------------\n");
     for(int i = 0;i<fileNumber;i++){

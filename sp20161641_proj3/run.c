@@ -14,7 +14,7 @@ int breakPoint(int argc, char argv[100][100]){ // break point를 설정한다
         return INPUT_ERROR;
     if(argc == 1)
         printBp();
-    else if(strcmp(argv[1],"clear") == 0){
+    else if(strcmp(argv[1],"clear") == 0){ // bp 초기화 
         bpMax = 0;
         printf("\t[");
         printf("%c[1;32m",27);	// ok 초록색으로 출력
@@ -63,6 +63,7 @@ int returnValue(int addr,int byte){ // 메모리에 저장된 byte 만큼의 값
     return temp;
 }
 void runOneInstruction(){ // PC기준 1개의 명령어 실행
+    // copy.obj 파일의 명령어만 구현되어있음 (ERROR 처리도 필요)
     int opcode = memory[reg[PC]/16][reg[PC]%16];
     int format = 0;
     switch(opcode/0x10){ //format별로 나누어주기
@@ -219,7 +220,7 @@ void printRegisters(){ // Print Registers
 int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램을 실행한다
     if(argc > 1)
         return INPUT_ERROR;
-    if(NewLoad){
+    if(NewLoad){ // 새롭게 loading 한 경우만 초기화 수행
         NewLoad = 0;
         for(int i = 0;i<10;i++)
             reg[i] = 0;
@@ -228,8 +229,6 @@ int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램
     }
     while(reg[PC]<progaddr+totalLen){ // while문으로 runOneInstruction() 실행하면서
         runOneInstruction();
-        //printRegisters();
-        //scanf("%*c");
         for(int i = 0;i<bpMax;i++){
             if(reg[PC] == bp[i]){ // bp를 만나면 함수 종료
                 printRegisters();
