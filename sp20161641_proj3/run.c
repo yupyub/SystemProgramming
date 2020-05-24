@@ -43,7 +43,7 @@ void printBp(){ // 저장된 BreakPoint를 출력한다
     for(int i = 0;i<bpMax;i++)
         printf("            %X\n",bp[i]);
 }
-void store(int address,int value,int byte){
+void store(int address,int value,int byte){ // 메모리에 byte 길이의 값을 저장한다
     char temp[10], shortStr[3];
     if(value<0)
         value -= 0xFF000000;
@@ -54,7 +54,7 @@ void store(int address,int value,int byte){
         memory[(address+i)/16][(address+i)%16] = strtol(shortStr,NULL,16);
     }
 }
-int returnValue(int addr,int byte){
+int returnValue(int addr,int byte){ // 메모리에 저장된 byte 만큼의 값을 반환한다
     int temp = memory[addr/16][addr%16];
     for(int i = 1;i<byte;i++){
         temp *= 16*16;
@@ -210,7 +210,7 @@ void runOneInstruction(){ // PC기준 1개의 명령어 실행
         }
     }
 }
-void printRegisters(){
+void printRegisters(){ // Print Registers
     printf("    A : %06X   X : %06X\n", reg[A], reg[X]);
     printf("    L : %06X  PC : %06X\n", reg[L], reg[PC]);
     printf("    B : %06X   S : %06X\n", reg[B], reg[S]);
