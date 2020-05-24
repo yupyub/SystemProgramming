@@ -4,8 +4,8 @@ extern int progaddr;
 extern int totalLen;
 extern unsigned char memory[65536][16];
 int reg[20]; // Registers
-typedef enum {A, X, L, B, S, T, F, KK, PC, SW}regNum;
-// 0:A, 1:X, 2:L, 3:B, 4:S, 5:T, 6:F, 7:?, 8:PC, 9:SW
+typedef enum {A, X, L, B, S, T, F, FF, PC, SW}regNum;
+// 0:A, 1:X, 2:L, 3:B, 4:S, 5:T, 6:F, 7:F2, 8:PC, 9:SW
 int NewLoad = 0; // 프로그램이 새롭게 Load되었는지 알려주는 Flag
 int bp[1000];
 int bpMax = 0;
@@ -228,8 +228,8 @@ int runProgram(int argc, char argv[100][100]){ // memory에 load된 프로그램
     }
     while(reg[PC]<progaddr+totalLen){ // while문으로 runOneInstruction() 실행하면서
         runOneInstruction();
-        printRegisters();
-        scanf("%*c");
+        //printRegisters();
+        //scanf("%*c");
         for(int i = 0;i<bpMax;i++){
             if(reg[PC] == bp[i]){ // bp를 만나면 함수 종료
                 printRegisters();
