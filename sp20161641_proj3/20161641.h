@@ -46,6 +46,7 @@
 // loader 관련 에러
 #define DUPLICATED_EXTERNAL_SYMBOL (19)
 #define UNDEFINED_EXTERNAL_SYMBOL (20)
+#define PROGADDR_OUT_OF_RANGE (22)
 ////////
 ////////
 // loader 관련 에러

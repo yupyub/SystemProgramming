@@ -10,7 +10,11 @@ int esMax[5];
 int setProgaddr(int argc, char argv[100][100]){ // loader 또는 run 명령어를 수행할 때 시작하는 주소를 지정한다
     if(argc != 2)
         return INPUT_ERROR;
-    progaddr = strtol(argv[1],NULL,16); 
+    progaddr = strtol(argv[1],NULL,16);
+    if(progaddr<0 || progaddr>0xFFFFF){
+        progaddr = 0;
+        return PROGADDR_OUT_OF_RANGE;
+    }
     return INPUT_NORMAL;
 }
 void initEstab(){ // estab 초기화

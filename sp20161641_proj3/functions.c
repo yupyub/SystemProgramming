@@ -58,6 +58,9 @@ void printError(int errorCase){ // 에러 종류별 에러구문 출력
 		case BP_VALUE_OUT_OF_RANGE:
 			printf("BP VALUE OUT OF RANGE\n");
 			break;
+		case PROGADDR_OUT_OF_RANGE:
+			printf("PROGADDR OUT OF RANGE\n");
+            break;
 	}
 
 }
